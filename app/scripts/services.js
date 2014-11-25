@@ -3,7 +3,7 @@
 angular.module('schoolApp.services',['base64','ngCookies'])
   .factory('Service',['$resource','$state','$cookies','$http',Service])
   .service('popupService',['$window',popupService])
-  .service('AuthService',['$resource','$base64',AuthService])
+  .service('AuthService',['$resource','$base64','$http',AuthService])
   .service('DataService',[DataService]);
 
 // Rest Service methods 'get','put','delete'
@@ -55,9 +55,9 @@ function popupService($window){
 
 // AuthService calls rest service for login/create accounts
 // (uses Basic Authentication)
-function AuthService($resource, $base64) {
+function AuthService($resource, $base64,$http) {
     this.Authenticate = function(user,pass,key) {
-      console.log('user : ' + user + ', pass : ' + pass);
+      $http.defaults.headers.common['Cache-Control'] = 'no-cache';
       return $resource('//localhost:8080/api/login',{}, {
         login: {
             method : 'get',

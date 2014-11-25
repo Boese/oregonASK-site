@@ -208,5 +208,6 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
   // On logout, remove token cookie
   $scope.logout = function() {
     $cookieStore.remove('token');
+    $scope.message = '';
   }
 }
