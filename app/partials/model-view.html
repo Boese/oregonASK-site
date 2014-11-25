@@ -1,0 +1,41 @@
+
+<div class="panel panel-success">
+  <div class="panel-heading text-center">
+    <h2><b>{{modelOnly.name}}</b></h2>
+    <a class="btn btn-danger" ui-sref="edit{{model}}({id:modelOnly.id})">Edit</a>
+  </div>
+
+  <div class="panel-body">
+    <table class="table table-striped">
+      <h4>{{model}} Information</h4>
+      <tr ng-repeat="(key,value) in modelOnly">
+        <td class="col-md-6">
+          <b>{{key}} : </b></div>
+        </td>
+        <td class = "col-md-6">
+            {{value}}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class = "panel panel-primary">
+  <div class="panel-heading text-center">
+    <h3><b>Extra Information</b></h3>
+  </div>
+
+  <div ng-repeat="(key,value) in modelArray" class="panel-body">
+    <table class="table table-striped">
+      <h4>{{ removeNumbers(key) }} : {{value.name}} {{value.year}}</h4>
+      <tr ng-repeat="(key2,value2) in value">
+        <td class="col-md-6">
+          <b>{{key2}} : </b>
+        </td>
+        <td class = "col-md-6">
+            {{value2}}
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

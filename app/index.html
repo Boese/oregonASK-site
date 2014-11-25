@@ -1,0 +1,57 @@
+<!doctype html>
+<html data-ng-app="schoolApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+  </head>
+
+  <body ng-controller="LoginCtrl">
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">OregonASK Database</a>
+            </div>
+            <div class="collapse navbar-collapse">
+                <ul ng-if="loginbutton === 'Logout'" class="nav navbar-nav">
+                    <li class=""><a ui-sref="schools">Schools</a></li>
+                    <li class=""><a ui-sref="sponsors">Sponsors</a></li>
+                    <li class=""><a ui-sref="nutrition">Nutrition</a></li>
+                    <li class=""><a ui-sref="summerfood">Summerfood</a></li>
+                    <li class=""><a ui-sref="programs">Programs</a></li>
+                </ul>
+                <ul class="nav navbar-nav pull-right">
+                  <li class=""><button ui-sref="login" ng-click="logout()" type="button" class="btn btn-default navbar-btn pull-right">{{loginbutton}}</button></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid" style="padding:60px 50px 0 50px">
+        <div ui-view></div>
+    </div>
+
+    <!--JQuery, Bootstrap, Angular, Angular-router, Angular-Resource-->
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-resource/angular-resource.min.js"></script>
+    <script type="text/javascript" src="bower_components/ng-table/ng-table.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular-base64/angular-base64.js"></script>
+    <script type="text/javascript" src="/bower_components/angular-cookies/angular-cookies.js"></script>
+
+    <!--My Scripts-->
+    <script type="text/javascript" src="scripts/app.js"></script>
+    <script type="text/javascript" src="scripts/controllers.js"></script>
+    <script type="text/javascript" src="scripts/services.js"></script>
+    <script type="text/javascript" src="scripts/directives.js"></script>
+
+
+
+   </body>
+</html>
