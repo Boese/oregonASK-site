@@ -2,6 +2,7 @@
 
 angular.module('schoolApp.services',['base64','ngCookies'])
   .factory('Service',['$resource','$state','$cookies','$http',Service])
+  .factory('ModelService',['$resource',ModelService])
   .service('popupService',['$window',popupService])
   .service('AuthService',['$resource','$base64','$http',AuthService])
   .service('DataService',[DataService]);
@@ -25,7 +26,7 @@ function Service($resource,$state,$cookies,$http){
             }
           }
         },
-        'query': {
+        query: {
           method: 'get',
           isArray: true,
           interceptor: {
@@ -35,7 +36,7 @@ function Service($resource,$state,$cookies,$http){
             }
           }
         },
-        'delete': {
+        delete: {
           method: 'delete',
           interceptor: {
             responseError: function (data) {
@@ -46,6 +47,12 @@ function Service($resource,$state,$cookies,$http){
         }
     })
 };
+
+function ModelService($resource) {
+    return $resource('/models/:model.json', {model:'@_model'}, {
+      query: {method:'get'}
+    });
+}
 
 function popupService($window){
     this.showPopup=function(message){

@@ -1,13 +1,47 @@
-
-<div class="form-group" ng-repeat="(key,value) in modelOnly">
-  <label for="{{key}}" class="col-sm-2 control-label">{{key}}</label>
-  <div class="col-sm-10">
-    <input type="text" ng-model="modelOnly[key]" class="form-control" id="{{value}}" placeholder="{{key}}?"/>
+<!--
+<div class="form">
+  <div class="form-group" ng-repeat="(key,value) in modelOnly">
+    <label for="{{key}}" class="col-sm-2 control-label">{{key}}</label>
+    <div class="col-sm-10">
+      <input type="text" ng-model="entity[key]" class="form-control" id="{{value}}" placeholder="{{key}}?"/>
+    </div>
   </div>
+-->
+{{entity}}
+
+<div class="row">
+  <div class="col-md-6 col-md-offset-2">
+<h2 class="col-sm-offset-4 col-sm-8">Add a new {{model}} ?</h2>
+  <div class="form-group" ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
+    <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
+    <div class="col-sm-8">
+      <input type="{{value}}" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
+    </div>
+  </div>
+
+<div class="row" ng-repeat="(key,value) in modelArray">
+    <button ng-if="entity[key].length === 0" ng-click="$event.preventDefault(); add(key)" class="btn btn-info center-block">Add {{key}} ?</button>
+  </br>
+    <div ng-if="entity[key].length > 0" class="row">
+      <h2 class="text-center">{{key}} entry : {{entity[key].length}}</h2>
+      <p class="col-sm-offset-4 col-sm-8" style="color:blue"><b>You've added a {{key}} entry. Try to fill in the form completely because this will be saved to the database. Hit the "Remove {{key}}" button to remove this entry. Hit the "Add another {{key}} ?" button to add another entry.</b></p>
+      <div class="form-group" ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
+        <label for="{{key2}}" class="col-sm-4 control-label">{{key2}}</label>
+        <div class="col-sm-8">
+          <input type="{{value2}}" ng-model="entity[key][entity[key].length-1][key2]" class="form-control" id="{{key2}}" placeholder="{{key2}}?"/>
+        </div>
+      </div>
+      <button ng-click="$event.preventDefault(); remove(key)" class="btn btn-danger center-block">Remove {{key}}</button>
+    </br>
+      <button ng-click="$event.preventDefault(); add(key)" class="btn btn-warning center-block">Add another {{key}} ?</button>
+    </br>
+    </div>
 </div>
 
-<div class="form-group">
-  <div class="col-sm-offset-2 col-sm-10">
-    <input type="submit" class="btn btn-primary" value="Save"/>
+  <div class="form-group">
+    <div class="col-sm-offset-4 col-sm-8">
+      <input type="submit" class="btn btn-success" value="Save"/>
+    </div>
   </div>
+</div>
 </div>

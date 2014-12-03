@@ -18,11 +18,11 @@
             </div>
             <div class="collapse navbar-collapse">
                 <ul ng-if="loginbutton === 'Logout'" class="nav navbar-nav">
-                    <li class=""><a ui-sref="schools">Schools</a></li>
-                    <li class=""><a ui-sref="sponsors">Sponsors</a></li>
-                    <li class=""><a ui-sref="nutrition">Nutrition</a></li>
-                    <li class=""><a ui-sref="summerfood">Summerfood</a></li>
-                    <li class=""><a ui-sref="programs">Programs</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="schools">Schools</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="sponsors">Sponsors</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="nutrition">Nutrition</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="summerfood">Summerfood</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="programs">Programs</a></li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
                   <li class=""><button ui-sref="login" ng-click="logout()" type="button" class="btn btn-default navbar-btn pull-right">{{loginbutton}}</button></li>
@@ -50,8 +50,5 @@
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" src="scripts/services.js"></script>
     <script type="text/javascript" src="scripts/directives.js"></script>
-
-
-
    </body>
 </html>

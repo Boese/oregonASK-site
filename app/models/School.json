@@ -1,0 +1,17 @@
+{
+  "model": {
+    "institutionId":"number",
+    "name":"text",
+    "elementary":"checkbox",
+    "middle":"checkbox",
+    "high":"checkbox",
+    "city":"text",
+    "state":"text",
+    "zip":"text",
+    "street":"text",
+    "congressionalDistrict":"text",
+    "county":"text",
+    "schoolDistrict":"text",
+    "schoolInfo":{}
+  }
+}

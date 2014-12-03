@@ -3,7 +3,7 @@
 angular.module('schoolApp.controllers', ['ngTable','ngCookies'])
     .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service','DataService',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service','DataService',ViewCtrl])
-    .controller('CreateCtrl',['$scope','$state','$stateParams','Service','DataService',CreateCtrl])
+    .controller('CreateCtrl',['$scope','$state','$stateParams','Service','ModelService','DataService','$http',CreateCtrl])
     .controller('EditCtrl',['$scope','$state','$stateParams','Service','DataService',EditCtrl])
     .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService',LoginCtrl]);
 
@@ -91,16 +91,58 @@ function ViewCtrl($scope,$state,$stateParams, Service,DataService) {
 }
 
 // Create a new model
-function CreateCtrl($scope, $state, $stateParams, Service,DataService) {
+function CreateCtrl($scope, $state, $stateParams, Service, ModelService, DataService) {
   $scope.model = DataService.data.model;
   $scope.returnstate = DataService.data.returnstate;
-  $scope.modelOnly = Service.get({table:'new', id:$scope.model})  //create new school instance. Properties will be set via ng-model on UI
+  $scope.entity = {};
 
-  $scope.add = function() { //create a new school. Issues a PUT to /api/school
-    $scope.modelOnly.$save({table:$scope.model},function() {
-      $state.go($scope.returnstate); // on success go back to home i.e. schools state.
+  $scope.modelOnly = {};
+  $scope.modelArray = {};
+
+  $scope.add = function(table) {
+    $scope.entity[table][$scope.entity[table].length] = {};
+  }
+
+  $scope.remove = function(table) {
+    $scope.entity[table].pop();
+  }
+
+  $scope.expand = function(table) {
+      ModelService.get({model:table}, function(data) {
+        $scope.modelArray[table] = data.model;
+        $scope.entity[table] = [];
+      })
+  }
+
+  $scope.notSorted = function(obj){
+    if (!obj) {
+      return [];
+    }
+    return Object.keys(obj);
+  }
+
+  $scope.loadModel = function() {
+    ModelService.get({model:$scope.model}).$promise
+      .then(function success(data){
+        var result = data.model;
+        for(var key in result) {
+          if(result[key] instanceof Object) {
+            $scope.expand(key);
+          }
+          else {
+            $scope.modelOnly[key] = result[key];
+          }
+        }
     });
-  };
+  }
+
+  $scope.save = function() { //create a new model. Issues a PUT to /api/*
+    Service.save({table:$scope.model}, $scope.entity, function() {
+        $state.go($scope.returnstate);
+      })
+    };
+
+  $scope.loadModel();
 }
 
 // Edit a model
@@ -108,17 +150,17 @@ function EditCtrl($scope, $state, $stateParams, Service,DataService) {
   $scope.model = DataService.data.model;
   $scope.returnstate = DataService.data.returnstate;
 
-  $scope.update = function() { //Update the edited school. Issues a PUT to /api/schools/:id
+  $scope.update = function() { //Update the edited model. Issues a PUT to /api/*/:id
     $scope.modelOnly.$save({table:$scope.model},function() {
       $state.go($scope.returnstate); // on success go back to home i.e. schools state.
     });
   };
 
-  $scope.load = function() { //Issues a GET request to /api/schools/:id to get a school to update
+  $scope.load = function() { //Issues a GET request to /api/*/:id to get a model to update
     $scope.modelOnly = Service.get({table:$scope.model, id: $stateParams.id });
   };
 
-  $scope.load(); // Load a school which can be edited on UI
+  $scope.load(); // Load a model which can be edited on UI
 }
 
 function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
@@ -148,7 +190,6 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
   // Login button on form. Validate Form & login
   $scope.login = function(form) {
     $scope.$broadcast('form-validation-check-validity');
-    console.log($scope.user);
     // If form is invalid, return
     if (form.$invalid) { return; }
 
@@ -170,7 +211,7 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
         })
         // Server didn't respond
         .catch(function error() {
-          $scope.message = 'Login failed, the server might be down';
+          $scope.message = 'Login failed, the server might be down. Try refreshing the page.';
         });
 
         // Clear Form
@@ -201,7 +242,7 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
       })
       // Server didn't respond
       .catch(function error() {
-        $scope.message = 'Account creation failed, the server might be down';
+        $scope.message = 'Account creation failed, the server might be down. Try refreshing the page.';
       });
   }
 
