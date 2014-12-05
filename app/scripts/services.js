@@ -4,8 +4,7 @@ angular.module('schoolApp.services',['base64','ngCookies'])
   .factory('Service',['$resource','$state','$cookies','$http',Service])
   .factory('ModelService',['$resource',ModelService])
   .service('popupService',['$window',popupService])
-  .service('AuthService',['$resource','$base64','$http',AuthService])
-  .service('DataService',[DataService]);
+  .service('AuthService',['$resource','$base64','$http',AuthService]);
 
 // Rest Service methods 'get','put','delete'
 function Service($resource,$state,$cookies,$http){
@@ -17,7 +16,7 @@ function Service($resource,$state,$cookies,$http){
     // interceptor will fire on server responseError, delete token, redirect to login
     //  (session most likely expired)
     return $resource('//localhost:8080/api/:table/:id',{table:'@_table',id:'@_id'},{
-        'save': {
+        save: {
           method: 'put',
           interceptor: {
             responseError: function (data) {
@@ -77,10 +76,3 @@ function AuthService($resource, $base64,$http) {
         })
     }
 };
-
-// DataService shares members of ListCtrl with other controller
-function DataService() {
-  this.setData = function(data) {
-    this.data = data;
-  }
-}

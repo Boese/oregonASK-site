@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('schoolApp', ['ui.router', 'ngResource', 'schoolApp.controllers', 'schoolApp.services', 'schoolApp.directives']);
+angular.module('schoolApp', ['ui.router', 'ngResource', 'schoolApp.controllers','schoolApp.grid-controller', 'schoolApp.services', 'schoolApp.directives']);
 
 angular.module('schoolApp').config(function($stateProvider) {
   // Login
@@ -17,31 +17,36 @@ angular.module('schoolApp').config(function($stateProvider) {
 
   // SCHOOL - For Each Entity with 'CRUD' operations
   $stateProvider.state('schools', { // state for showing all models
+    abstract: true,
     url: '/schools',
-    templateUrl: 'partials/models.html',
-    controller: 'ListCtrl',
-    onEnter: function(DataService){  // set data for controllers
-      var data = {
+    templateUrl: 'index.html',
+    data: {
+        url:'schools',
         model:'School', // name of Entity
-        first:'name',   // name of first column in models list, searched by this
-        second:'city',  // name of 2nd column in models list
-        third:'county', // name of 3rd column in models list
-        returnstate:'schools'   // return state after create,update, or delete
+        first:'NAME',   // name of first column in models list, searched by this
+        second:'CITY',  // name of 2nd column in models list
+        third:'COUNTY', // name of 3rd column in models list
+        returnstate:'schools.list'   // return state after create,update, or delete
       }
-      DataService.setData(data);
-    }
-  }).state('viewSchool', { //state for showing single model
-    url: '/school/:id/view',
+  }).state('schools.list', {
+    templateUrl: 'partials/models.html',
+    controller: 'ListCtrl'
+  }).state('schools.view', { //state for showing single model
+    url: '/:id/view',
     templateUrl: 'partials/model-view.html',
     controller: 'ViewCtrl'
-  }).state('newSchool', { //state for adding a new model
-    url: '/schools/new',
+  }).state('schools.new', { //state for adding a new model
+    url: '/new',
     templateUrl: 'partials/model-add.html',
     controller: 'CreateCtrl'
-  }).state('editSchool', { //state for updating a model
-    url: '/schools/:id/edit',
+  }).state('schools.edit', { //state for updating a model
+    url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
     controller: 'EditCtrl'
+  }).state('schools.grid', { //state for updating a model
+    url: '/grid',
+    templateUrl: 'partials/demogrid.html',
+    controller: 'gridCtrl'
   });
 
   // SPONSOR
@@ -52,9 +57,9 @@ angular.module('schoolApp').config(function($stateProvider) {
     onEnter: function(DataService){
       var data = {
         model:'Sponsor',
-        first:'name',
-        second:'agrNumber',
-        third:'sponsorType',
+        first:'NAME',
+        second:'AGR_NUMBER',
+        third:'SPONSOR_TYPE',
         returnstate:'sponsors'
       }
       DataService.setData(data);
@@ -81,9 +86,9 @@ angular.module('schoolApp').config(function($stateProvider) {
     onEnter: function(DataService){
       var data = {
         model:'Nutrition',
-        first: 'programType',
-        second: 'siteName',
-        third: 'city',
+        first: 'PROGRAM_TYPE',
+        second: 'SITE_NAME',
+        third: 'CITY',
         returnstate: 'nutrition'
       }
       DataService.setData(data);
@@ -110,9 +115,9 @@ angular.module('schoolApp').config(function($stateProvider) {
     onEnter: function(DataService){
       var data = {
         model:'Summerfood',
-        first: 'siteName',
-        second: 'siteNumber',
-        third: 'city',
+        first: 'SITE_NAME',
+        second: 'SITE_NUMBER',
+        third: 'CITY',
         returnstate: 'summerfood'
       }
       DataService.setData(data);
@@ -139,9 +144,9 @@ angular.module('schoolApp').config(function($stateProvider) {
     onEnter: function(DataService){
       var data = {
         model:'Program',
-        first: 'name',
-        second: 'licenseNumber',
-        third: 'city',
+        first: 'NAME',
+        second: 'LICENSE_NUMBER',
+        third: 'CITY',
         returnstate: 'programs'
       }
       DataService.setData(data);
@@ -159,6 +164,7 @@ angular.module('schoolApp').config(function($stateProvider) {
     templateUrl: 'partials/model-edit.html',
     controller: 'EditCtrl'
   });
+
 }).run(function($state){
-  $state.go('login');
+  $state.go('schools.list');
 });

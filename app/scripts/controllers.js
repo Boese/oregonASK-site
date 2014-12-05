@@ -1,19 +1,23 @@
 'use strict';
 
-angular.module('schoolApp.controllers', ['ngTable','ngCookies'])
-    .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service','DataService',ListCtrl])
-    .controller('ViewCtrl',['$scope','$state','$stateParams','Service','DataService',ViewCtrl])
-    .controller('CreateCtrl',['$scope','$state','$stateParams','Service','ModelService','DataService','$http',CreateCtrl])
-    .controller('EditCtrl',['$scope','$state','$stateParams','Service','DataService',EditCtrl])
+angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.select'])
+    .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
+    .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
+    .controller('CreateCtrl',['$scope','$state','$stateParams','Service','ModelService',CreateCtrl])
+    .controller('EditCtrl',['$scope','$state','$stateParams','Service',EditCtrl])
     .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService',LoginCtrl]);
 
 // List of models
-function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams, Service,DataService) {
-    $scope.model = DataService.data.model;   // name of Entity
-    $scope.first = DataService.data.first;    // name of first column in models list, searched by this
-    $scope.second = DataService.data.second;  // name of 2nd column in models list
-    $scope.third = DataService.data.third;    // name of 3rd column in models list
-    $scope.returnstate = DataService.data.returnstate;  // return state after create,update, or delete
+function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams, Service) {
+    $scope.url = $state.current.data.url;
+    $scope.model = $state.current.data.model;   // name of Entity
+    $scope.first = $state.current.data.first;    // name of first column in models list, searched by this
+    $scope.second = $state.current.data.second;  // name of 2nd column in models list
+    $scope.third = $state.current.data.third;    // name of 3rd column in models list
+    $scope.returnstate = $state.current.data.returnstate;  // return state after create,update, or delete
+
+    $scope.schools = {};
+    $scope.selectedSchools = {};
 
     $scope.getColumn = function(table,name) {
       return table[name];
@@ -22,16 +26,13 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
     // Sort models alphabetically, search based $scope.first
     $scope.load = function() {
       Service.query({table:$scope.model}, function(data) {
-        var filter = {}
-        filter[$scope.first] = '';
-
+        $scope.schools = data;
+        var f = {};
+        f[$scope.first] = '';
         $scope.tableParams = new ngTableParams({
               page: 1,
               count: 10,
-              filter: filter,
-              sorting: {
-                name: 'asc'
-              },
+              filter: f
             }, {
               total: data.length,
               getData: function($defer, params) {
@@ -61,8 +62,8 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
 }
 
 // View a single model's data
-function ViewCtrl($scope,$state,$stateParams, Service,DataService) {
-  $scope.model = DataService.data.model;
+function ViewCtrl($scope,$state,$stateParams, Service) {
+  $scope.model = $state.current.data.model;
 
   $scope.load = function() {
     Service.get({table:$scope.model, id: $stateParams.id }, function(data) {
@@ -91,13 +92,29 @@ function ViewCtrl($scope,$state,$stateParams, Service,DataService) {
 }
 
 // Create a new model
-function CreateCtrl($scope, $state, $stateParams, Service, ModelService, DataService) {
+function CreateCtrl($scope, $state, $stateParams, Service, ModelService) {
   $scope.model = DataService.data.model;
   $scope.returnstate = DataService.data.returnstate;
-  $scope.entity = {};
 
+  $scope.entity = {};
   $scope.modelOnly = {};
   $scope.modelArray = {};
+
+  $scope.option = {};
+  $scope.options = {};
+  $scope.tables = [];
+
+  $scope.loadTables = function() {
+    var table = $scope.tables[$scope.tables.length-1];
+    if(table === undefined)
+      return;
+      Service.query({table:table}).$promise
+      .then(function success(data){
+        $scope.options[table] = data;
+        $scope.tables.pop();
+        $scope.loadTables();
+      })
+    }
 
   $scope.add = function(table) {
     $scope.entity[table][$scope.entity[table].length] = {};
@@ -127,12 +144,22 @@ function CreateCtrl($scope, $state, $stateParams, Service, ModelService, DataSer
         var result = data.model;
         for(var key in result) {
           if(result[key] instanceof Object) {
-            $scope.expand(key);
+            if(result[key].id !== undefined) {
+              $scope.modelOnly[key] = result[key];
+              var tableName = key;
+              var temp = {};
+              temp[tableName] = result[key];
+              $scope.entity = temp;
+              $scope.tables.push(key);
+            }
+            else
+              $scope.expand(key);
           }
           else {
             $scope.modelOnly[key] = result[key];
           }
         }
+        $scope.loadTables();
     });
   }
 
@@ -146,7 +173,7 @@ function CreateCtrl($scope, $state, $stateParams, Service, ModelService, DataSer
 }
 
 // Edit a model
-function EditCtrl($scope, $state, $stateParams, Service,DataService) {
+function EditCtrl($scope, $state, $stateParams, Service) {
   $scope.model = DataService.data.model;
   $scope.returnstate = DataService.data.returnstate;
 
@@ -202,7 +229,7 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
           // Server responded with Token
           if(result) {
             $cookieStore.put('token',data.Token);
-            $state.go('schools');
+            $state.go('schools.list');
           }
           // Server responded with error message
           else {

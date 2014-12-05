@@ -1,0 +1,14 @@
+{
+  "model": {
+    "YEAR":"number",
+    "TOTAL_STUDENT_COUNT":"text",
+    "FREE_LUNCH_COUNT":"text",
+    "REDUCED_LUNCH_COUNT":"text",
+    "PERCENT_MEET_READING":"text",
+    "PERCENT_MINORITY":"text",
+    "PERCENT_WHITE":"text",
+    "PERCENT_FR":"text",
+    "LO_GRADE_OFFERED":"text",
+    "HI_GRADE_OFFERED":"text"
+  }
+}

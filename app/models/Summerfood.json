@@ -1,0 +1,18 @@
+{
+  "model":{
+    "SITE_NAME":"text",
+    "SITE_NUMBER":"text",
+    "STREET":"text",
+    "CITY":"text",
+    "ZIP":"text",
+    "STATE":"text",
+    "COUNTY":"text",
+    "School": {
+      "id":""
+    },
+    "Sponsor": {
+      "id":""
+    },
+    "SUMMERFOOD_INFO":{}
+  }
+}

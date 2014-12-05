@@ -1,0 +1,24 @@
+{
+  "model": {
+    "YEAR":"number",
+    "AVERAGE_DAILY_ATTENDANCE":"text",
+    "MAX_CAPACITY":"text",
+    "OFFERED_BEFORE_SCHOOL":"checkbox",
+    "OFFERED_AFTER_SCHOOL":"checkbox",
+    "OFFERED_MONDAY":"checkbox",
+    "OFFERED_TUESDAY":"checkbox",
+    "OFFERED_WEDNESDAY":"checkbox",
+    "OFFERED_THURSDAY":"checkbox",
+    "OFFERED_FRIDAY":"checkbox",
+    "OFFERED_SATURDAY":"checkbox",
+    "OFFERED_SUNDAY":"checkbox",
+    "OFFERED_WEEKENDS":"checkbox",
+    "OFFERED_EVENINGS":"checkbox",
+    "OFFERED_BREAKS":"checkbox",
+    "AVERAGE_HOURS_PER_WEEK":"text",
+    "FOOD_PROVIDED_BEFORE_SCHOOL":"checkbox",
+    "FOOD_PROVIDED_AFTER_SCHOOL":"checkbox",
+    "FOOD_PROVIDED_DURING_BREAKS":"checkbox",
+    "STEM_OFFERED":"checkbox"
+  }
+}

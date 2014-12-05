@@ -1,0 +1,10 @@
+{
+  "model": {
+    "YEAR":"number",
+    "BREAKFAST":"text",
+    "LUNCH":"text",
+    "SUPPER":"text",
+    "AM_SNACK":"text",
+    "PM_SNACK":"text"
+  }
+}
