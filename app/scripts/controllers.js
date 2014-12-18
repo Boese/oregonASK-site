@@ -34,7 +34,7 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
         var sortOb = {};
         filterOb[$scope.first] = '';
         sortOb[$scope.first] = 'asc';
-        
+
         $scope.tableParams = new ngTableParams({
               page: 1,
               count: 10,
@@ -70,23 +70,35 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
 
 // View a single model's data
 function ViewCtrl($scope,$state,$stateParams, Service) {
-  $scope.load = function() {
-    Service.get({table:$scope.model, id: $stateParams.id }, function(data) {
-      $scope.modelOnly = {}; //data from model only, no sets
-      $scope.modelArray = {}; //arrays joined to model
+  $scope.modelOnly = {}; //data from model only, no sets
+  $scope.modelArray = {}; //arrays joined to model
 
-      // Assign modelOnly data to modelOnly & array data to modelArray
-      for(var key in data) {
-        if(!(data[key] instanceof Array || key === 'toJSON')) {
+  $scope.notSorted = function(obj){
+    if (!obj) {
+      return [];
+    }
+    return Object.keys(obj);
+  }
+
+  $scope.load = function() {
+    Service.get({table:$scope.model, id: $stateParams.id }).$promise
+      .then(function(data) {
+        data = data.toJSON();
+        // Assign modelOnly data to modelOnly & array data to modelArray
+        for(var key in data) {
+          if(data[key] instanceof Array) {
+            for(var index in data[key]) {
+              $scope.modelArray[key + index] = data[key][index];
+            }
+          }
+          else if(data[key] instanceof Object) {
+            $scope.modelOnly[key] = data[key]['NAME'];
+          }
+          else {
             $scope.modelOnly[key] = data[key];
-        }
-        else if(data[key] instanceof Array) {
-          for(var index in data[key]) {
-            $scope.modelArray[key + index] = data[key][index];
           }
         }
-      }
-    });
+      });
   };
 
   $scope.removeNumbers = function(word) {
