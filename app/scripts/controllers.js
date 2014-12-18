@@ -1,21 +1,24 @@
 'use strict';
 
 angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.select'])
+    .controller('DataCtrl',['$scope','$state',DataCtrl])
     .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
     .controller('CreateCtrl',['$scope','$state','$stateParams','Service','ModelService',CreateCtrl])
     .controller('EditCtrl',['$scope','$state','$stateParams','Service',EditCtrl])
     .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService',LoginCtrl]);
 
+function DataCtrl($scope, $state) {
+  $scope.url = $state.current.data.url;
+  $scope.model = $state.current.data.model;   // name of Entity
+  $scope.first = $state.current.data.first;    // name of first column in models list, searched by this
+  $scope.second = $state.current.data.second;  // name of 2nd column in models list
+  $scope.third = $state.current.data.third;    // name of 3rd column in models list
+  $scope.returnstate = $state.current.data.returnstate;  // return state after create,update, or delete
+}
+
 // List of models
 function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams, Service) {
-    $scope.url = $state.current.data.url;
-    $scope.model = $state.current.data.model;   // name of Entity
-    $scope.first = $state.current.data.first;    // name of first column in models list, searched by this
-    $scope.second = $state.current.data.second;  // name of 2nd column in models list
-    $scope.third = $state.current.data.third;    // name of 3rd column in models list
-    $scope.returnstate = $state.current.data.returnstate;  // return state after create,update, or delete
-
     $scope.schools = {};
     $scope.selectedSchools = {};
 
@@ -27,12 +30,16 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
     $scope.load = function() {
       Service.query({table:$scope.model}, function(data) {
         $scope.schools = data;
-        var f = {};
-        f[$scope.first] = '';
+        var filterOb = {};
+        var sortOb = {};
+        filterOb[$scope.first] = '';
+        sortOb[$scope.first] = 'asc';
+        
         $scope.tableParams = new ngTableParams({
               page: 1,
               count: 10,
-              filter: f
+              filter: filterOb,
+              sorting: sortOb,
             }, {
               total: data.length,
               getData: function($defer, params) {
@@ -63,8 +70,6 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
 
 // View a single model's data
 function ViewCtrl($scope,$state,$stateParams, Service) {
-  $scope.model = $state.current.data.model;
-
   $scope.load = function() {
     Service.get({table:$scope.model, id: $stateParams.id }, function(data) {
       $scope.modelOnly = {}; //data from model only, no sets
@@ -93,8 +98,6 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
 
 // Create a new model
 function CreateCtrl($scope, $state, $stateParams, Service, ModelService) {
-  $scope.model = DataService.data.model;
-  $scope.returnstate = DataService.data.returnstate;
 
   $scope.entity = {};
   $scope.modelOnly = {};
@@ -174,8 +177,6 @@ function CreateCtrl($scope, $state, $stateParams, Service, ModelService) {
 
 // Edit a model
 function EditCtrl($scope, $state, $stateParams, Service) {
-  $scope.model = DataService.data.model;
-  $scope.returnstate = DataService.data.returnstate;
 
   $scope.update = function() { //Update the edited model. Issues a PUT to /api/*/:id
     $scope.modelOnly.$save({table:$scope.model},function() {

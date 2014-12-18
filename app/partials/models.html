@@ -1,7 +1,7 @@
 
 <div class="row text-center">
   <h3>All {{model}}s</h3>
-  <button class="btn btn-info" ui-sref="schools.grid">View {{url}} in Data Grid</button>
+  <button class="btn btn-info" ui-sref="{{url}}.grid">Export {{url}} data</button>
 </div>
 <hr?
 
@@ -14,7 +14,7 @@
       </div>
     </div>
       <div class="col-md-2 col-md-offset-4">
-        <a ui-sref="new{{model}}" class="btn btn-success">Add New {{model}}</a>
+        <a ui-sref="{{url}}.new" class="btn btn-success">Add New {{model}}</a>
       </div>
     </div>
 </div>

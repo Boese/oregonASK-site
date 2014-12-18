@@ -22,10 +22,10 @@
             <div class="collapse navbar-collapse">
                 <ul ng-if="loginbutton === 'Logout'" class="nav navbar-nav">
                     <li class=""><a ng-click="reset()" ui-sref="schools.list">Schools</a></li>
-                    <li class=""><a ng-click="reset()" ui-sref="sponsors">Sponsors</a></li>
-                    <li class=""><a ng-click="reset()" ui-sref="nutrition">Nutrition</a></li>
-                    <li class=""><a ng-click="reset()" ui-sref="summerfood">Summerfood</a></li>
-                    <li class=""><a ng-click="reset()" ui-sref="programs">Programs</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="sponsors.list">Sponsors</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="nutrition.list">Nutrition</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="summerfood.list">Summerfood</a></li>
+                    <li class=""><a ng-click="reset()" ui-sref="programs.list">Programs</a></li>
                 </ul>
                 <ul class="nav navbar-nav pull-right">
                   <li class=""><button ui-sref="login" ng-click="logout()" type="button" class="btn btn-default navbar-btn pull-right">{{loginbutton}}</button></li>
@@ -39,8 +39,8 @@
 
     <!--JQuery, Bootstrap, Angular, Angular-router, Angular-Resource-->
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
-    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 
     <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script type="text/javascript" src="bower_components/angular-resource/angular-resource.js"></script>

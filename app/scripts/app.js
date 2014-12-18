@@ -20,6 +20,7 @@ angular.module('schoolApp').config(function($stateProvider) {
     abstract: true,
     url: '/schools',
     templateUrl: 'index.html',
+    controller: 'DataCtrl',
     data: {
         url:'schools',
         model:'School', // name of Entity
@@ -29,6 +30,7 @@ angular.module('schoolApp').config(function($stateProvider) {
         returnstate:'schools.list'   // return state after create,update, or delete
       }
   }).state('schools.list', {
+    url: '/',
     templateUrl: 'partials/models.html',
     controller: 'ListCtrl'
   }).state('schools.view', { //state for showing single model
@@ -45,124 +47,152 @@ angular.module('schoolApp').config(function($stateProvider) {
     controller: 'EditCtrl'
   }).state('schools.grid', { //state for updating a model
     url: '/grid',
-    templateUrl: 'partials/demogrid.html',
+    templateUrl: 'partials/grid.html',
     controller: 'gridCtrl'
   });
 
   // SPONSOR
-  $stateProvider.state('sponsors', {
+  $stateProvider.state('sponsors', { // state for showing all models
+    abstract: true,
     url: '/sponsors',
-    templateUrl: 'partials/models.html',
-    controller: 'ListCtrl',
-    onEnter: function(DataService){
-      var data = {
-        model:'Sponsor',
-        first:'NAME',
-        second:'AGR_NUMBER',
-        third:'SPONSOR_TYPE',
-        returnstate:'sponsors'
-      }
-      DataService.setData(data);
+    templateUrl: 'index.html',
+    controller: 'DataCtrl',
+    data: {
+      url:'sponsors',
+      model:'Sponsor', // name of Entity
+      first:'NAME',   // name of first column in models list, searched by this
+      second:'AGR_NUMBER',  // name of 2nd column in models list
+      third:'SPONSOR_TYPE', // name of 3rd column in models list
+      returnstate:'sponsors.list'   // return state after create,update, or delete
     }
-  }).state('viewSponsor', {
-    url: '/sponsor/:id/view',
+  }).state('sponsors.list', {
+    url: '/',
+    templateUrl: 'partials/models.html',
+    controller: 'ListCtrl'
+  }).state('sponsors.view', { //state for showing single model
+    url: '/:id/view',
     templateUrl: 'partials/model-view.html',
     controller: 'ViewCtrl'
-  }).state('newSponsor', {
-    url: '/sponsors/new',
+  }).state('sponsors.new', { //state for adding a new model
+    url: '/new',
     templateUrl: 'partials/model-add.html',
     controller: 'CreateCtrl'
-  }).state('editSponsor', {
-    url: '/sponsors/:id/edit',
+  }).state('sponsors.edit', { //state for updating a model
+    url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
     controller: 'EditCtrl'
+  }).state('sponsors.grid', { //state for updating a model
+    url: '/grid',
+    templateUrl: 'partials/grid.html',
+    controller: 'gridCtrl'
   });
 
   // Nutrition
-  $stateProvider.state('nutrition', {
+  $stateProvider.state('nutrition', { // state for showing all models
+    abstract: true,
     url: '/nutrition',
-    templateUrl: 'partials/models.html',
-    controller: 'ListCtrl',
-    onEnter: function(DataService){
-      var data = {
-        model:'Nutrition',
-        first: 'PROGRAM_TYPE',
-        second: 'SITE_NAME',
-        third: 'CITY',
-        returnstate: 'nutrition'
-      }
-      DataService.setData(data);
+    templateUrl: 'index.html',
+    controller: 'DataCtrl',
+    data: {
+      url:'nutrition',
+      model:'Nutrition', // name of Entity
+      first: 'PROGRAM_TYPE',
+      second: 'SITE_NAME',
+      third: 'CITY',
+      returnstate:'nutrition.list'   // return state after create,update, or delete
     }
-  }).state('viewNutrition', {
-    url: '/nutrition/:id/view',
+  }).state('nutrition.list', {
+    url: '/',
+    templateUrl: 'partials/models.html',
+    controller: 'ListCtrl'
+  }).state('nutrition.view', { //state for showing single model
+    url: '/:id/view',
     templateUrl: 'partials/model-view.html',
     controller: 'ViewCtrl'
-  }).state('newNutrition', {
-    url: '/nutrition/new',
+  }).state('nutrition.new', { //state for adding a new model
+    url: '/new',
     templateUrl: 'partials/model-add.html',
     controller: 'CreateCtrl'
-  }).state('editNutrition', {
-    url: '/nutrition/:id/edit',
+  }).state('nutrition.edit', { //state for updating a model
+    url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
     controller: 'EditCtrl'
+  }).state('nutrition.grid', { //state for updating a model
+    url: '/grid',
+    templateUrl: 'partials/grid.html',
+    controller: 'gridCtrl'
   });
 
   // Summerfood
-  $stateProvider.state('summerfood', {
+  $stateProvider.state('summerfood', { // state for showing all models
+    abstract: true,
     url: '/summerfood',
-    templateUrl: 'partials/models.html',
-    controller: 'ListCtrl',
-    onEnter: function(DataService){
-      var data = {
-        model:'Summerfood',
-        first: 'SITE_NAME',
-        second: 'SITE_NUMBER',
-        third: 'CITY',
-        returnstate: 'summerfood'
-      }
-      DataService.setData(data);
+    templateUrl: 'index.html',
+    controller: 'DataCtrl',
+    data: {
+      url:'summerfood',
+      model:'Summerfood', // name of Entity
+      first: 'SITE_NAME',
+      second: 'SITE_NUMBER',
+      third: 'CITY',
+      returnstate:'summerfood.list'   // return state after create,update, or delete
     }
-  }).state('viewSummerfood', {
-    url: '/summerfood/:id/view',
+  }).state('summerfood.list', {
+    url: '/',
+    templateUrl: 'partials/models.html',
+    controller: 'ListCtrl'
+  }).state('summerfood.view', { //state for showing single model
+    url: '/:id/view',
     templateUrl: 'partials/model-view.html',
     controller: 'ViewCtrl'
-  }).state('newSummerfood', {
-    url: '/summerfood/new',
+  }).state('summerfood.new', { //state for adding a new model
+    url: '/new',
     templateUrl: 'partials/model-add.html',
     controller: 'CreateCtrl'
-  }).state('editSummerfood', {
-    url: '/summerfood/:id/edit',
+  }).state('summerfood.edit', { //state for updating a model
+    url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
     controller: 'EditCtrl'
+  }).state('summerfood.grid', { //state for updating a model
+    url: '/grid',
+    templateUrl: 'partials/grid.html',
+    controller: 'gridCtrl'
   });
 
   // Programs
-  $stateProvider.state('programs', {
+  $stateProvider.state('programs', { // state for showing all models
+    abstract: true,
     url: '/programs',
-    templateUrl: 'partials/models.html',
-    controller: 'ListCtrl',
-    onEnter: function(DataService){
-      var data = {
-        model:'Program',
-        first: 'NAME',
-        second: 'LICENSE_NUMBER',
-        third: 'CITY',
-        returnstate: 'programs'
-      }
-      DataService.setData(data);
+    templateUrl: 'index.html',
+    controller: 'DataCtrl',
+    data: {
+      url:'programs',
+      model:'Program', // name of Entity
+      first: 'NAME',
+      second: 'LICENSE_NUMBER',
+      third: 'CITY',
+      returnstate:'programs.list'   // return state after create,update, or delete
     }
-  }).state('viewProgram', {
-    url: '/program/:id/view',
+  }).state('programs.list', {
+    url: '/',
+    templateUrl: 'partials/models.html',
+    controller: 'ListCtrl'
+  }).state('programs.view', { //state for showing single model
+    url: '/:id/view',
     templateUrl: 'partials/model-view.html',
     controller: 'ViewCtrl'
-  }).state('newProgram', {
-    url: '/program/new',
+  }).state('programs.new', { //state for adding a new model
+    url: '/new',
     templateUrl: 'partials/model-add.html',
     controller: 'CreateCtrl'
-  }).state('editProgram', {
-    url: '/program/:id/edit',
+  }).state('programs.edit', { //state for updating a model
+    url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
     controller: 'EditCtrl'
+  }).state('programs.grid', { //state for updating a model
+    url: '/grid',
+    templateUrl: 'partials/grid.html',
+    controller: 'gridCtrl'
   });
 
 }).run(function($state){
