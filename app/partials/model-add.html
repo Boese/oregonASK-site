@@ -1,3 +1,12 @@
-<form class="form-horizontal" role="form" ng-submit="save()">
-  <div ng-include="'partials/_form.html'"></div>
-</form>
+{{entity}}
+
+<div class="panel panel-primary">
+  <div class="panel-heading">
+    <h3 class="text-center">Add a new {{model}}</h3>
+  </div>
+  <div class="panel-body">
+    <form class="form-horizontal" role="form" ng-submit="save()">
+        <div ng-include="'partials/_form.html'"></div>
+    </form>
+  </div>
+</div>

@@ -1,70 +1,44 @@
-<!--
-<div class="form">
-  <div class="form-group" ng-repeat="(key,value) in modelOnly">
-    <label for="{{key}}" class="col-sm-2 control-label">{{key}}</label>
-    <div class="col-sm-10">
-      <input type="text" ng-model="entity[key]" class="form-control" id="{{value}}" placeholder="{{key}}?"/>
-    </div>
-  </div>
--->
 
-{{entity}}
-
-<div class="row">
-
-<div class="col-md-9">
-  <h2 class="col-sm-offset-4 col-sm-8">Add a new {{model}} ?</h2>
   <div class="form-group" ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
     <label for="{{key}}" class="col-sm-4 control-label">{{key}}</label>
     <div ng-if="value.id === undefined" class="col-sm-8">
-      <input type="{{value}}" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
+      <textarea ng-if="value === 'textarea'" type="{{value}}" ng-model="entity[key]" class="form-control" rows="6" id="{{key}}" placeholder="{{key}}?"></textarea>
+      <input ng-if="value !== 'textarea'" type="{{value}}" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
     </div>
     <div ng-if="value.id !== undefined" class="col-sm-8">
       <p style="color:green">Search for {{key}}
-      <ui-select ng-model="entity[key].id" theme="selectize" ng-disabled="disabled">
-        <ui-select-match placeholder="Select or search a {{key}} in the list...">{{$select.selected.NAME}} <small>{{$select.selected.COUNTY}}</small><small>{{$select.selected.SPONSOR_TYPE}}</small></ui-select-match>
-        <ui-select-choices repeat="option.id as option in options[key] | filter: $select.search">
-          <span ng-bind-html="option.NAME | highlight: $select.search"></span>
-          <small>
-            <span ng-bind-html="option.COUNTY | highlight: $select.search"></span>
-            <span ng-bind-html="option.SPONSOR_TYPE | highlight: $select.search"></span>
-          </small>
-        </ui-select-choices>
-      </ui-select>
-    </div>
-  </div>
-</div>
-
-<div class="col-md-9" ng-repeat="(key,value) in modelArray">
-  <button ng-if="entity[key].length === 0" ng-click="$event.preventDefault(); add(key)" class="btn btn-info pull-right">Add {{key}} ?</button>
-  <div ng-if="entity[key].length > 0" class="row">
-    <h2 class="text-center">{{key}} entry : {{entity[key].length}}</h2>
-    <div class="form-group" ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
-      <label for="{{key2}}" class="col-sm-4 control-label">{{key2}}</label>
-      <div class="col-sm-8">
-        <input type="{{value2}}" ng-model="entity[key][entity[key].length-1][key2]" class="form-control" id="{{key2}}" placeholder="{{key2}}?"/>
+        <ui-select ng-model="entity[key].id" theme="selectize" ng-disabled="disabled">
+          <ui-select-match placeholder="Select or search a {{key}} in the list...">{{$select.selected.NAME}} <small>{{$select.selected.COUNTY}}</small><small>{{$select.selected.SPONSOR_TYPE}}</small></ui-select-match>
+          <ui-select-choices repeat="option.id as option in options[key] | filter: $select.search">
+            <span ng-bind-html="option.NAME | highlight: $select.search"></span>
+            <small>
+              <span ng-bind-html="option.COUNTY | highlight: $select.search"></span>
+              <span ng-bind-html="option.SPONSOR_TYPE | highlight: $select.search"></span>
+            </small>
+          </ui-select-choices>
+        </ui-select>
+        <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); entity[key] = null">Clear</button>
       </div>
     </div>
-    <p class="col-sm-offset-4 col-sm-8" style="color:blue"><b>You've added a {{key}} entry. Try to fill in the form completely because this will be saved to the database. Hit the "Remove {{key}}" button to remove this entry. Hit the "Add another {{key}}" button to add another entry.</b></p>
 
-    <div class="col-sm-offset-4 col-sm-8">
-      <button ng-click="$event.preventDefault(); remove(key)" class="btn btn-danger pull-right">Remove {{key}}</button>
-      <button ng-click="$event.preventDefault(); add(key)" class="btn btn-warning pull-right">Add another {{key}}</button>
-    </div>
-  </div>
-</div>
-
-<div class="col-md-12">
   <hr>
-</div>
 
-<div class="col-md-8">
-  <div class="form-group">
-    <div class="col-sm-offset-4 col-sm-8">
-      <input type="submit" class="btn btn-lg btn-success" value="Save {{model}}"/>
+  <div class="form-group" ng-repeat="(key,value) in modelArray">
+    <div class="row" ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
+      <h2 class="text-center">{{ key }} : {{entity[key][key2]['YEAR']}}</h2>
+      <div class="form-group" ng-repeat="key3 in notSorted(value2)" ng-init="value3 = value2[key3]">
+        <label for="{{key3}}" class="col-sm-4 control-label">{{key3}}</label>
+        <div class="col-sm-8">
+          <textarea ng-if="value3 === 'textarea'" type="{{value3}}" ng-model="entity[key][key2][key3]" class="form-control" rows="6" id="{{key3}}" placeholder="{{key3}}?"></textarea>
+          <input ng-if="value3 !== 'textarea'" type="{{value3}}" ng-model="entity[key][key2][key3]" class="form-control" id="{{key3}}" placeholder="{{key3}}?"/>
+        </div>
+      </div>
+      <button ng-click="$event.preventDefault(); remove(key,key2)" class="btn btn-danger center-block">Remove ↑ {{key}}</button>
     </div>
+    <hr>
+      <button ng-if="$last" ng-click="$event.preventDefault(); add(key)" class="btn btn-warning center-block">Add {{key}}</button>
   </div>
-</div>
 
 
-</div>
+
+  <input type="submit" class="btn btn-lg btn-success"/>

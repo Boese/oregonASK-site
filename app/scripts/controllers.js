@@ -4,8 +4,7 @@ angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.
     .controller('DataCtrl',['$scope','$state',DataCtrl])
     .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
-    .controller('CreateCtrl',['$scope','$state','$stateParams','Service','ModelService',CreateCtrl])
-    .controller('EditCtrl',['$scope','$state','$stateParams','Service',EditCtrl])
+    .controller('EditCtrl',['$scope','$state','$stateParams','Service', 'ModelService',EditCtrl])
     .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService',LoginCtrl]);
 
 function DataCtrl($scope, $state) {
@@ -108,43 +107,18 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
   $scope.load();
 }
 
-// Create a new model
-function CreateCtrl($scope, $state, $stateParams, Service, ModelService) {
-
-  $scope.entity = {};
+// Edit a model
+function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
   $scope.modelOnly = {};
   $scope.modelArray = {};
+  $scope.modelJSON = {};
+  $scope.entity = {};
 
-  $scope.option = {};
-  $scope.options = {};
-  $scope.tables = [];
-
-  $scope.loadTables = function() {
-    var table = $scope.tables[$scope.tables.length-1];
-    if(table === undefined)
-      return;
-      Service.query({table:table}).$promise
-      .then(function success(data){
-        $scope.options[table] = data;
-        $scope.tables.pop();
-        $scope.loadTables();
-      })
-    }
-
-  $scope.add = function(table) {
-    $scope.entity[table][$scope.entity[table].length] = {};
-  }
-
-  $scope.remove = function(table) {
-    $scope.entity[table].pop();
-  }
-
-  $scope.expand = function(table) {
-      ModelService.get({model:table}, function(data) {
-        $scope.modelArray[table] = data.model;
-        $scope.entity[table] = [];
-      })
-  }
+  $scope.save = function() { //create a new model. Issues a PUT to /api/*
+    Service.save({table:$scope.model}, $scope.entity, function() {
+      $state.go($scope.returnstate);
+    })
+  };
 
   $scope.notSorted = function(obj){
     if (!obj) {
@@ -153,54 +127,97 @@ function CreateCtrl($scope, $state, $stateParams, Service, ModelService) {
     return Object.keys(obj);
   }
 
-  $scope.loadModel = function() {
-    ModelService.get({model:$scope.model}).$promise
+  $scope.expand = function(table) {
+    ModelService.get({model:table}, function(data) {
+      $scope.modelJSON[table] = data.model;
+    })
+  }
+
+  $scope.add = function(table) {
+    $scope.entity[table].push({});
+    $scope.modelArray[table].push($scope.modelJSON[table]);
+  }
+
+  $scope.remove = function(table,index) {
+    $scope.entity[table].splice(index,index+1);
+    $scope.modelArray[table].splice(index,index+1);
+  }
+
+  $scope.option = {};
+  $scope.options = {};
+  $scope.tables = [];
+
+  $scope.loadTables = function() {
+    var table = $scope.tables[$scope.tables.length-1];
+
+    if(table === undefined) {
+      if($stateParams.id !== undefined)
+        $scope.loadModelService();
+      return;
+    }
+      Service.query({table:table}).$promise
       .then(function success(data){
-        var result = data.model;
-        for(var key in result) {
-          if(result[key] instanceof Object) {
-            if(result[key].id !== undefined) {
-              $scope.modelOnly[key] = result[key];
-              var tableName = key;
-              var temp = {};
-              temp[tableName] = result[key];
-              $scope.entity = temp;
-              $scope.tables.push(key);
+        $scope.options[table] = data;
+        $scope.tables.pop();
+        $scope.loadTables();
+      })
+    }
+
+  $scope.loadModelService = function() {
+    Service.get({table:$scope.model, id: $stateParams.id }).$promise
+    .then(function(data) {
+      data = data.toJSON();
+      // Assign modelOnly data to modelOnly & array data to modelArray
+      for(var key in data) {
+        if(data[key] instanceof Array) {
+          if(key.indexOf('INFO') != -1) {
+            $scope.modelArray[key] = [];
+            $scope.entity[key] = [];
+            for(var key2 in data[key]) {
+              var info = {};
+              for(var key3 in data[key][key2]) {
+                info[key3] = data[key][key2][key3];
+              }
+              $scope.modelArray[key].push($scope.modelJSON[key]);
+              $scope.entity[key].push(info);
             }
-            else
-              $scope.expand(key);
-          }
-          else {
-            $scope.modelOnly[key] = result[key];
           }
         }
-        $scope.loadTables();
+        else if(data[key] instanceof Object) {
+          var temp ={};
+          temp['id'] = data[key]['id'];
+          $scope.entity[key] = temp;
+        }
+        else {
+          $scope.entity[key] = data[key];
+        }
+      }
     });
   }
 
-  $scope.save = function() { //create a new model. Issues a PUT to /api/*
-    Service.save({table:$scope.model}, $scope.entity, function() {
-        $state.go($scope.returnstate);
-      })
-    };
+  $scope.loadModelJSON = function() {
+    ModelService.get({model:$scope.model}).$promise
+      .then(function success(data){
+        data = data.model;
+        for(var key in data) {
+          if(data[key] instanceof Array) {
+            $scope.expand(key);
+            $scope.entity[key] = [];
+            $scope.modelArray[key] = [];
+          }
+          else if(data[key] instanceof Object) {
+            $scope.modelOnly[key] = data[key];
+            $scope.tables.push(key);
+          }
+          else {
+            $scope.modelOnly[key] = data[key];
+          }
+        }
+        $scope.loadTables();
+      });
+    }
 
-  $scope.loadModel();
-}
-
-// Edit a model
-function EditCtrl($scope, $state, $stateParams, Service) {
-
-  $scope.update = function() { //Update the edited model. Issues a PUT to /api/*/:id
-    $scope.modelOnly.$save({table:$scope.model},function() {
-      $state.go($scope.returnstate); // on success go back to home i.e. schools state.
-    });
-  };
-
-  $scope.load = function() { //Issues a GET request to /api/*/:id to get a model to update
-    $scope.modelOnly = Service.get({table:$scope.model, id: $stateParams.id });
-  };
-
-  $scope.load(); // Load a model which can be edited on UI
+  $scope.loadModelJSON();
 }
 
 function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {

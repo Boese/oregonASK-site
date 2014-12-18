@@ -12,6 +12,6 @@
     "CONGRESSIONAL_DISTRICT":"text",
     "COUNTY":"text",
     "SCHOOL_DISTRICT":"text",
-    "SCHOOL_INFO":{}
+    "SCHOOL_INFO":[]
   }
 }

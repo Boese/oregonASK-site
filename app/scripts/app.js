@@ -40,7 +40,7 @@ angular.module('schoolApp').config(function($stateProvider) {
   }).state('schools.new', { //state for adding a new model
     url: '/new',
     templateUrl: 'partials/model-add.html',
-    controller: 'CreateCtrl'
+    controller: 'EditCtrl'
   }).state('schools.edit', { //state for updating a model
     url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
@@ -76,7 +76,7 @@ angular.module('schoolApp').config(function($stateProvider) {
   }).state('sponsors.new', { //state for adding a new model
     url: '/new',
     templateUrl: 'partials/model-add.html',
-    controller: 'CreateCtrl'
+    controller: 'EditCtrl'
   }).state('sponsors.edit', { //state for updating a model
     url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
@@ -112,7 +112,7 @@ angular.module('schoolApp').config(function($stateProvider) {
   }).state('nutrition.new', { //state for adding a new model
     url: '/new',
     templateUrl: 'partials/model-add.html',
-    controller: 'CreateCtrl'
+    controller: 'EditCtrl'
   }).state('nutrition.edit', { //state for updating a model
     url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
@@ -148,7 +148,7 @@ angular.module('schoolApp').config(function($stateProvider) {
   }).state('summerfood.new', { //state for adding a new model
     url: '/new',
     templateUrl: 'partials/model-add.html',
-    controller: 'CreateCtrl'
+    controller: 'EditCtrl'
   }).state('summerfood.edit', { //state for updating a model
     url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',
@@ -184,7 +184,7 @@ angular.module('schoolApp').config(function($stateProvider) {
   }).state('programs.new', { //state for adding a new model
     url: '/new',
     templateUrl: 'partials/model-add.html',
-    controller: 'CreateCtrl'
+    controller: 'EditCtrl'
   }).state('programs.edit', { //state for updating a model
     url: '/:id/edit',
     templateUrl: 'partials/model-edit.html',

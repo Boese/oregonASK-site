@@ -1,42 +1,35 @@
 
-<div class="panel panel-success">
+<div class="panel panel-primary">
   <div class="panel-heading text-center">
-    <h2><b>{{modelOnly.NAME}} {{modelOnly.SITE_NAME}}</b></h2>
+    <h2><b>{{model}} : {{modelOnly.NAME}} {{modelOnly.SITE_NAME}}</b></h2>
     <a class="btn btn-danger" ui-sref="{{url}}.edit({id:modelOnly.id})">Edit</a>
   </div>
 
   <div class="panel-body">
-    <table class="table table-striped">
-      <h4>{{model}} Information</h4>
-      <tr ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
-        <td class="col-md-6">
-          <b>{{key}} : </b></div>
-        </td>
-        <td class = "col-md-6">
-            {{value}}
-        </td>
-      </tr>
-    </table>
+    <ul style="list-style: none" ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
+      <li class="col-md-4"><b>{{key}}</b> : <i>{{value}}</i></li>
+    </ul>
   </div>
 </div>
 
-<div class = "panel panel-primary">
-  <div class="panel-heading text-center">
-    <h3><b>Extra Information</b></h3>
-  </div>
 
-  <div ng-repeat="key in notSorted(modelArray)" class="panel-body" ng-init="value = modelArray[key]">
+<div class="panel panel-danger">
+  <div class="panel-heading text-center"><h3><b>Related Info</b></h3></div>
+  <div class="panel-body">
+
+  <div ng-repeat="key in notSorted(modelArray)" class="col-md-4" ng-init="value = modelArray[key]">
+    <h4 class="text-center">{{ removeNumbers(key) }} : {{value.NAME}} {{value.YEAR}}</h4>
     <table class="table table-striped">
-      <h4>{{ removeNumbers(key) }} : {{value.NAME}} {{value.YEAR}}</h4>
       <tr ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
-        <td class="col-md-6">
+        <td>
           <b>{{key2}} : </b>
         </td>
-        <td class = "col-md-6">
-            {{value2}}
+        <td>
+          <i>{{value2}}</i>
         </td>
       </tr>
     </table>
-    <hr>
+  </div>
+
   </div>
 </div>
