@@ -39,7 +39,7 @@
       <td><b>Delete</b></td>
     </tr>
     <tr ng-repeat="mod in $data">
-      <td filter="tableParams.filter()|json">{{getColumn(mod,first)}}</td>
+      <td>{{getColumn(mod,first)}}</td>
       <td>{{getColumn(mod,second)}}</td>
       <td>{{getColumn(mod,third)}}</td>
       <td><a class="btn btn-primary" ui-sref="{{url}}.view({id:mod.id})">View</a></td>

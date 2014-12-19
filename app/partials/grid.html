@@ -60,11 +60,19 @@
   <div class="row">
     <div class="col-md-4">
     </div>
-    <div class="col-md-4 text-center">
-      <strong>Number of records: </strong> {{ gridOptions.data.length | number }}
+    <div class="col-md-4">
+      <ul style="list-style: none">
+        <li style="color:#fc5c4f"><strong>Number of all rows: </strong> {{ gridOptions.data.length | number }}</li>
+        <li style="color:blue"><strong>Number of rows visible: </strong> {{ rowsVisible | number }}</li>
+        <li style="color:green"><strong>Number of rows selected: </strong> {{ rowsSelected | number }}</li>
+        <hr>
+        <li ng-show="years.length > 1">
+          <select class="form-control" ng-model="yearSelected" ng-options="year for year in years"></select>
+        </li>
+      </ul>
     </div>
     <div class="col-md-4">
-      <button class="btn btn-primary center-block" ng-click="loadTable()">Reset Table?</button>
+      <button class="btn btn-primary center-block" ng-click="resetTable()">Reset Table?</button>
     </div>
   </div>
 

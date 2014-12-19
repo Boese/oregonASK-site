@@ -309,5 +309,6 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
   $scope.logout = function() {
     $cookieStore.remove('token');
     $scope.message = '';
+    $state.go('login')
   }
 }

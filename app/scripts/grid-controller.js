@@ -5,6 +5,8 @@ angular.module('schoolApp.grid-controller', ['ngAnimate','ui.grid','ui.grid.edit
 function gridCtrl($scope,$state,$stateParams,Service,ModelService,uiGridConstants) {
   $scope.$scope = $scope;
   $scope.msg = {};
+  $scope.rowsSelected = 0;
+  $scope.rowsVisible = 0;
 
   // TABLE OPTIONS
   $scope.gridOptions = {
@@ -21,14 +23,56 @@ function gridCtrl($scope,$state,$stateParams,Service,ModelService,uiGridConstant
     exporterPdfTableHeaderStyle: {fontSize: 8, bold: true, alignment: 'center', color: 'blue'},
     exporterPdfOrientation: 'landscape',
     exporterPdfPageSize: 'A2',
-
+    exporterHeaderFilter: function( displayName ) {
+      return displayName.toLowerCase();
+    },
     importerDataAddCallback: function ( grid, data ) {
       $scope.gridOptions.data = data;
     },
     onRegisterApi: function(gridApi){
       $scope.gridApi = gridApi;
+
+      gridApi.selection.on.rowSelectionChanged($scope, function(row) {
+        $scope.rowsSelected = gridApi.selection.getSelectedRows().length
+      })
+      gridApi.selection.on.rowSelectionChangedBatch($scope, function(rows) {
+        $scope.rowsSelected = gridApi.selection.getSelectedRows().length
+      })
+      gridApi.core.on.rowsVisibleChanged($scope, function() {
+        $scope.rowsVisible = gridApi.core.getVisibleRows(gridApi.grid).length;
+      })
     }
 };
+
+$scope.years = ['Select a Year'];
+$scope.yearSelected = 'Select a Year';
+
+$scope.$watch('yearSelected', function(newValue, oldValue) {
+  console.log(oldValue);
+  console.log(newValue);
+  yearChanged(newValue);
+});
+
+function yearChanged(year) {
+  var grid = $scope.gridApi.grid;
+  var column = null;
+  for(var key in grid.columns) {
+    if(grid.columns[key].displayName === 'Year') {
+      column = grid.columns[key];
+      break;
+    }
+  }
+  var filter = {
+    'term': ''
+  };
+  if(year !== 'Select a Year') {
+    filter.term = year;
+  }
+  if(column !== null) {
+    column.filters[0] = filter;
+    $scope.gridApi.core.refresh();
+  }
+}
 
 // CSV & PDF EXPORT
 $scope.export = function(){
@@ -50,7 +94,7 @@ $scope.loadColumns = function() {
     for(var key in columndata) {
       var temp = {};
       temp['name'] = key;
-      temp['width'] = '20%';
+      temp['width'] = '200';
       $scope.gridOptions.columnDefs.push(temp);
     }
   })
@@ -58,6 +102,7 @@ $scope.loadColumns = function() {
 
 var dataToLoad = [];
 var i = 0;
+var percent = 0;
 var doneData = [];
 
 function loadRecur() {
@@ -78,7 +123,7 @@ function loadRecur() {
                   for(var key3 in data[key][key2]) {
                     column = {};
                     column['name'] = key3;
-                    column['width'] = '20%';
+                    column['width'] = '200';
                     $scope.gridOptions.columnDefs.push(column);
                   }
                 }
@@ -87,13 +132,13 @@ function loadRecur() {
             // name of programs school or sponsor
             else if(data[key] instanceof Object) {
               column['name'] = key;
-              column['width'] = '20%';
+              column['width'] = '200';
               $scope.gridOptions.columnDefs.push(column);
             }
             // regular data
             else {
               column['name'] = key;
-              column['width'] = '20%';
+              column['width'] = '200';
               $scope.gridOptions.columnDefs.push(column);
             }
           }
@@ -112,6 +157,8 @@ function loadRecur() {
                 for(var key3 in data[key][key2]) {
                   if(key3 !== 'id')
                     rowInfo[key3] = data[key][key2][key3];
+                  if(key3.toLowerCase() === 'year' && $scope.years.indexOf(data[key][key2][key3]) === -1)
+                    $scope.years.push(data[key][key2][key3]);
                 }
                 rowInfos.push(rowInfo);
               }
@@ -123,6 +170,8 @@ function loadRecur() {
           }
           // regular data 'regular type'
           else {
+            if(key.toLowerCase() === 'year' && $scope.years.indexOf(data[key]) === -1)
+              $scope.years.push(data[key]);
             row[key] = data[key];
           }
         }
@@ -144,7 +193,16 @@ function loadRecur() {
           }
         }
 
+        // increment counter
         i++;
+
+        // increment percentage done
+        if(i >= dataToLoad.length)
+          percent = i;
+        else if(i%50 === 0)
+          percent += 50;
+
+        // Recur
         loadRecur();
       })
   } else {
@@ -161,12 +219,14 @@ $scope.loadData = function() {
 };
 
 $scope.getPercentage = function() {
-  return Math.ceil((i/dataToLoad.length) * 100)
+  return Math.ceil((percent/dataToLoad.length) * 100)
 }
 
 $scope.resetTable = function() {
-  $scope.gridOptions.data = {};
-  $scope.gridOptions.columnDefs = [];
+  $scope.gridApi.selection.clearSelectedRows();
+  delete $scope.gridOptions.enableFiltering;
+  $scope.gridOptions['enableFiltering'] = true;
+  $scope.gridApi.core.refresh();
 }
 
 $scope.loadTable = function() {
