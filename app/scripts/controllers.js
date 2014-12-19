@@ -32,6 +32,8 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
         var filterOb = {};
         var sortOb = {};
         filterOb[$scope.first] = '';
+        filterOb[$scope.second] = '';
+        filterOb[$scope.third] = '';
         sortOb[$scope.first] = 'asc';
 
         $scope.tableParams = new ngTableParams({
