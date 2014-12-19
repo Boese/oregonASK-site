@@ -19,16 +19,18 @@
 
   <div ng-repeat="key in notSorted(modelArray)" class="col-md-4" ng-init="value = modelArray[key]">
     <h4 class="text-center">{{ removeNumbers(key) }} : {{value.NAME}} {{value.YEAR}}</h4>
-    <table class="table table-striped">
-      <tr ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
-        <td>
-          <b>{{key2}} : </b>
-        </td>
-        <td>
-          <i>{{value2}}</i>
-        </td>
-      </tr>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <tr ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
+          <td>
+            <b>{{key2}} : </b>
+          </td>
+          <td>
+            <i>{{value2}}</i>
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 
   </div>

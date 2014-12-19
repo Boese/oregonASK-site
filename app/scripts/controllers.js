@@ -31,9 +31,9 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
         $scope.schools = data;
         var filterOb = {};
         var sortOb = {};
-        filterOb[$scope.first] = '';
-        filterOb[$scope.second] = '';
-        filterOb[$scope.third] = '';
+        filterOb[$scope.first] = undefined;
+        filterOb[$scope.second] = undefined;
+        filterOb[$scope.third] = undefined;
         sortOb[$scope.first] = 'asc';
 
         $scope.tableParams = new ngTableParams({
@@ -115,8 +115,23 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
   $scope.modelArray = {};
   $scope.modelJSON = {};
   $scope.entity = {};
+  $scope.error = '';
 
   $scope.save = function() { //create a new model. Issues a PUT to /api/*
+    // Make sure required fields are entered
+    if($scope.entity[$scope.first] === undefined ||
+      $scope.entity[$scope.second] === undefined ||
+      $scope.entity[$scope.third] === undefined) {
+      $scope.error = 'Must enter all the red fields'
+      return;
+    }
+    if($scope.entity[$scope.first].length < 1 ||
+      $scope.entity[$scope.second].length < 1 ||
+      $scope.entity[$scope.third].length < 1) {
+        $scope.error = 'Must enter all the red fields'
+        return;
+      }
+    // If valid, save model to database
     Service.save({table:$scope.model}, $scope.entity, function() {
       $state.go($scope.returnstate);
     })
