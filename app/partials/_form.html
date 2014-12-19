@@ -17,14 +17,14 @@
             </small>
           </ui-select-choices>
         </ui-select>
-        <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); entity[key] = null">Clear</button>
-      </div>
+      <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); entity[key] = null">Clear</button>
     </div>
+  </div>
 
   <hr>
 
   <div class="form-group" ng-repeat="(key,value) in modelArray">
-    <div class="row" ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
+    <div ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
       <h2 class="text-center">{{ key }} : {{entity[key][key2]['YEAR']}}</h2>
       <div class="form-group" ng-repeat="key3 in notSorted(value2)" ng-init="value3 = value2[key3]">
         <label for="{{key3}}" class="col-sm-4 control-label">{{key3}}</label>
@@ -38,7 +38,5 @@
     <hr>
       <button ng-if="$last" ng-click="$event.preventDefault(); add(key)" class="btn btn-warning center-block">Add {{key}}</button>
   </div>
-
-
 
   <input type="submit" class="btn btn-lg btn-success"/>
