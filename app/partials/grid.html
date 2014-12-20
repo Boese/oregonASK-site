@@ -58,22 +58,24 @@
   <hr>
 
   <div class="row">
-    <div class="col-md-4">
-    </div>
-    <div class="col-md-4">
+    <div class="col-md-4 col-md-offset-4">
       <ul style="list-style: none">
         <li style="color:#fc5c4f"><strong>Number of all rows: </strong> {{ gridOptions.data.length | number }}</li>
         <li style="color:blue"><strong>Number of rows visible: </strong> {{ rowsVisible | number }}</li>
         <li style="color:green"><strong>Number of rows selected: </strong> {{ rowsSelected | number }}</li>
         <hr>
         <li ng-show="years.length > 1">
+          <label>Year selected: </label>
           <select class="form-control" ng-model="yearSelected" ng-options="year for year in years"></select>
         </li>
+        <br>
+        <li><b>Columns visible:</b></li>
       </ul>
     </div>
-    <div class="col-md-4">
-      <button class="btn btn-primary center-block" ng-click="resetTable()">Reset Table?</button>
-    </div>
+  </div>
+
+  <div class="row text-center">
+    <button ng-if="$index !== 0" ng-repeat="column in columns" ng-class="{'active': (column.active)}" ng-click="toggleColumns($index)" class="btn btn-default btn-sm">{{column.displayName}}</button>
   </div>
 
   <br>

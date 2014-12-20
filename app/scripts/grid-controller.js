@@ -44,8 +44,8 @@ function gridCtrl($scope,$state,$stateParams,Service,ModelService,uiGridConstant
     }
 };
 
-$scope.years = ['Select a Year'];
-$scope.yearSelected = 'Select a Year';
+$scope.years = ['all'];
+$scope.yearSelected = 'all';
 
 $scope.$watch('yearSelected', function(newValue, oldValue) {
   console.log(oldValue);
@@ -65,7 +65,7 @@ function yearChanged(year) {
   var filter = {
     'term': ''
   };
-  if(year !== 'Select a Year') {
+  if(year !== 'all') {
     filter.term = year;
   }
   if(column !== null) {
@@ -100,10 +100,18 @@ $scope.loadColumns = function() {
   })
 };
 
+$scope.toggleColumns = function(index) {
+  ($scope.gridApi.grid.columns[index].visible) ? $scope.gridApi.grid.columns[index].hideColumn() : $scope.gridApi.grid.columns[index].showColumn();
+  $scope.gridApi.core.notifyDataChange($scope.gridApi.grid, uiGridConstants.dataChange.COLUMN);
+  ($scope.columns[index].active) ? $scope.columns[index].active = false : $scope.columns[index].active = true;
+}
+
 var dataToLoad = [];
 var i = 0;
 var percent = 0;
 var doneData = [];
+
+$scope.columns = [];
 
 function loadRecur() {
   if(i < dataToLoad.length) {
@@ -206,7 +214,16 @@ function loadRecur() {
         loadRecur();
       })
   } else {
+    // copy data to grid
     $scope.gridOptions.data = doneData;
+    // default year option to most recent year
+    $scope.yearSelected = $scope.years[$scope.years.length-1];
+
+    // button toggle for columns
+    $scope.columns = $scope.gridApi.grid.columns;
+    for(var key in $scope.columns) {
+      $scope.columns[key]['active'] = true;
+    }
   }
 }
 
@@ -220,13 +237,6 @@ $scope.loadData = function() {
 
 $scope.getPercentage = function() {
   return Math.ceil((percent/dataToLoad.length) * 100)
-}
-
-$scope.resetTable = function() {
-  $scope.gridApi.selection.clearSelectedRows();
-  delete $scope.gridOptions.enableFiltering;
-  $scope.gridOptions['enableFiltering'] = true;
-  $scope.gridApi.core.refresh();
 }
 
 $scope.loadTable = function() {
