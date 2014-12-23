@@ -122,13 +122,13 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
     if($scope.entity[$scope.first] === undefined ||
       $scope.entity[$scope.second] === undefined ||
       $scope.entity[$scope.third] === undefined) {
-      $scope.error = 'Must enter all the red fields'
+      $scope.error = 'Must enter all the red fields above'
       return;
     }
     if($scope.entity[$scope.first].length < 1 ||
       $scope.entity[$scope.second].length < 1 ||
       $scope.entity[$scope.third].length < 1) {
-        $scope.error = 'Must enter all the red fields'
+        $scope.error = 'Must enter all the red fields above'
         return;
       }
     // If valid, save model to database
@@ -272,9 +272,7 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
       AuthService.Authenticate($scope.user.email,$scope.user.password).login().$promise
         // Server responded
         .then(function success(data) {
-          var result = data.Token;
-          // Server responded with Token
-          if(result) {
+          if(data.Token) {
             $cookieStore.put('token',data.Token);
             $state.go('schools.list');
           }
@@ -285,7 +283,7 @@ function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
         })
         // Server didn't respond
         .catch(function error() {
-          $scope.message = 'Login failed, the server might be down. Try refreshing the page.';
+          $scope.message = 'Login failed, check your email and password';
         });
 
         // Clear Form

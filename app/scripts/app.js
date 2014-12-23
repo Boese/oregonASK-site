@@ -196,5 +196,5 @@ angular.module('schoolApp').config(function($stateProvider) {
   });
 
 }).run(function($state){
-  $state.go('schools.list');
+  $state.go('login');
 });
