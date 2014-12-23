@@ -159,93 +159,93 @@ function loadRecur() {
                         rowInfos.push(rowInfo);
                       }
                     }
-                    // parent contains children records ?
-                    else {
-                        if(data[key].length > 0)
-                          row[key + ' at location?'] = 'yes';
-                        else
-                          row[key + ' at location?'] = 'no';
-                        if(!checkColumn(key + ' at location?')) {
-                          var temp = {};
-                          temp['name'] = key + ' at location?';
-                          temp['width'] = '200';
-                          $scope.gridOptions.columnDefs.push(temp);
-                        }
-                      }
-                    }
-                    // name of programs school or sponsor 'Object'
-                    else if(data[key] instanceof Object) {
-                      row[key] = data[key]['NAME'];
-                      if(!checkColumn(key)) {
-                        var temp = {};
-                        temp['name'] = key;
-                        temp['width'] = '200';
-                        $scope.gridOptions.columnDefs.push(temp);
-                      }
-                    }
-                    // regular data 'regular type'
-                    else {
-                      if(key.toLowerCase() === 'year' && $scope.years.indexOf(data[key]) === -1)
-                        $scope.years.push(data[key]);
-                        row[key] = data[key];
-                        if(!checkColumn(key)) {
-                          var temp = {};
-                          temp['name'] = key;
-                          temp['width'] = '200';
-                          $scope.gridOptions.columnDefs.push(temp);
-                        }
-                      }
-                    }
-
-                  // No info tables
-                  if(rowInfos.length === 0)
-                    doneData.push(row);
-                    // At least 1 info table
-                    else {
-                      for(var count = 0; count < rowInfos.length; count++) {
-                        var mainRow = {};
-                        for(var key in row) {
-                          mainRow[key] = row[key];
-                        }
-                        for(var key in rowInfos[count]) {
-                          mainRow[key] = rowInfos[count][key];
-                        }
-                        doneData.push(mainRow);
-                      }
-                    }
-
-                    // increment counter
-                    i++;
-
-                    // increment percentage done
-                    if(i >= dataToLoad.length)
-                      percent = i;
-                      else if(i%50 === 0)
-                        percent += 50;
-
-                        // Recur
-                        loadRecur();
-                      })
-                    } else {
-                      // copy data to grid
-                      $scope.gridOptions.data = doneData;
-                      // default year option to most recent year
-                      $scope.yearSelected = $scope.years[$scope.years.length-1];
-
-                      // button toggle for columns
-                      $scope.columns = $scope.gridApi.grid.columns;
-                      for(var key in $scope.columns) {
-                        $scope.columns[key]['active'] = true;
-                      }
+                // parent contains children records ?
+                else {
+                    if(data[key].length > 0)
+                      row[key + ' at location?'] = 'yes';
+                    else
+                      row[key + ' at location?'] = 'no';
+                    if(!checkColumn(key + ' at location?')) {
+                      var temp = {};
+                      temp['name'] = key + ' at location?';
+                      temp['width'] = '200';
+                      $scope.gridOptions.columnDefs.push(temp);
                     }
                   }
-        doneData.push(data)
+                }
+                // name of programs school or sponsor 'Object'
+                else if(data[key] instanceof Object) {
+                  row[key] = data[key]['NAME'];
+                  if(!checkColumn(key)) {
+                    var temp = {};
+                    temp['name'] = key;
+                    temp['width'] = '200';
+                    $scope.gridOptions.columnDefs.push(temp);
+                  }
+                }
+                // regular data 'regular type'
+                else {
+                  if(key.toLowerCase() === 'year' && $scope.years.indexOf(data[key]) === -1)
+                    $scope.years.push(data[key]);
+                    row[key] = data[key];
+                    if(!checkColumn(key)) {
+                      var temp = {};
+                      temp['name'] = key;
+                      temp['width'] = '200';
+                      $scope.gridOptions.columnDefs.push(temp);
+                    }
+                  }
+                }
+
+                // No info tables
+                if(rowInfos.length === 0)
+                  doneData.push(row);
+                  // At least 1 info table
+                  else {
+                    for(var count = 0; count < rowInfos.length; count++) {
+                      var mainRow = {};
+                      for(var key in row) {
+                        mainRow[key] = row[key];
+                      }
+                      for(var key in rowInfos[count]) {
+                        mainRow[key] = rowInfos[count][key];
+                      }
+                      doneData.push(mainRow);
+                    }
+                  }
+
+                  // increment counter
+                  i++;
+
+                  // increment percentage done
+                  if(i >= dataToLoad.length)
+                    percent = i;
+                    else if(i%50 === 0)
+                      percent += 50;
+
+                      // Recur
+                      loadRecur();
+                    })
+                  } else {
+                    // copy data to grid
+                    $scope.gridOptions.data = doneData;
+                    // default year option to most recent year
+                    $scope.yearSelected = $scope.years[$scope.years.length-1];
+
+                    // button toggle for columns
+                    $scope.columns = $scope.gridApi.grid.columns;
+                    for(var key in $scope.columns) {
+                      $scope.columns[key]['active'] = true;
+                    }
+                  }
+                }
+    doneData.push(data)
 
     // increment counter
     i++;
 
-  // increment percentage done
-  if(i >= dataToLoad.length)
+    // increment percentage done
+    if(i >= dataToLoad.length)
     percent = i;
     else if(i%50 === 0)
       percent += 50;
