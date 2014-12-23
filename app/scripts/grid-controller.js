@@ -44,68 +44,53 @@ function gridCtrl($scope,$state,$stateParams,Service,ModelService,uiGridConstant
     }
   };
 
-  // Years Filter
-  $scope.years = ['all'];
-  $scope.yearSelected = 'all';
+// Years Filter
+$scope.years = ['all'];
+$scope.yearSelected = 'all';
 
-  // Watch Year filter when user switches year
-  $scope.$watch('yearSelected', function(newValue, oldValue) {
-    yearChanged(newValue);
-  });
+// Watch Year filter when user switches year
+$scope.$watch('yearSelected', function(newValue, oldValue) {
+  yearChanged(newValue);
+});
 
-  // Update Year filter when year changes
-  function yearChanged(year) {
-    var grid = $scope.gridApi.grid;
-    var column = null;
-    for(var key in grid.columns) {
-      if(grid.columns[key].displayName === 'Year') {
-        column = grid.columns[key];
-        break;
-      }
-    }
-    var filter = {
-      'term': ''
-    };
-    if(year !== 'all') {
-      filter.term = year;
-    }
-    if(column !== null) {
-      column.filters[0] = filter;
-      $scope.gridApi.core.refresh();
+// Update Year filter when year changes
+function yearChanged(year) {
+  var grid = $scope.gridApi.grid;
+  var column = null;
+  for(var key in grid.columns) {
+    if(grid.columns[key].displayName === 'Year') {
+      column = grid.columns[key];
+      break;
     }
   }
-
-  // CSV & PDF EXPORT
-  $scope.export = function(){
-    if ($scope.export_format == 'csv') {
-      var myElement = angular.element(document.querySelectorAll(".custom-csv-link-location"));
-      $scope.gridApi.exporter.csvExport( $scope.export_row_type, $scope.export_column_type, myElement );
-    } else if ($scope.export_format == 'pdf') {
-      $scope.gridApi.exporter.pdfExport( $scope.export_row_type, $scope.export_column_type );
-    };
+  var filter = {
+    'term': ''
   };
-
-  // NEEDED FOR SEARCH FILTERS
-  $scope.loadColumns = function() {
-    $scope.gridOptions.columnDefs = [];
-    ModelService.get({model:$scope.model}).$promise
-    .then(function success(data){
-      var columndata = data.model;
-      var columns = [];
-      for(var key in columndata) {
-        var temp = {};
-        temp['name'] = key;
-        temp['width'] = '200';
-        $scope.gridOptions.columnDefs.push(temp);
-      }
-    })
-  };
-
-  $scope.toggleColumns = function(index) {
-    ($scope.gridApi.grid.columns[index].visible) ? $scope.gridApi.grid.columns[index].hideColumn() : $scope.gridApi.grid.columns[index].showColumn();
-    $scope.gridApi.core.notifyDataChange($scope.gridApi.grid, uiGridConstants.dataChange.COLUMN);
-    ($scope.columns[index].active) ? $scope.columns[index].active = false : $scope.columns[index].active = true;
+  if(year !== 'all') {
+    filter.term = year;
   }
+  if(column !== null) {
+    column.filters[0] = filter;
+    $scope.gridApi.core.refresh();
+  }
+}
+
+// CSV & PDF EXPORT
+$scope.export = function(){
+  if ($scope.export_format == 'csv') {
+    var myElement = angular.element(document.querySelectorAll(".custom-csv-link-location"));
+    $scope.gridApi.exporter.csvExport( $scope.export_row_type, $scope.export_column_type, myElement );
+  } else if ($scope.export_format == 'pdf') {
+    $scope.gridApi.exporter.pdfExport( $scope.export_row_type, $scope.export_column_type );
+  };
+};
+
+// Show/Hide columns
+$scope.toggleColumns = function(index) {
+  ($scope.gridApi.grid.columns[index].visible) ? $scope.gridApi.grid.columns[index].hideColumn() : $scope.gridApi.grid.columns[index].showColumn();
+  $scope.gridApi.core.notifyDataChange($scope.gridApi.grid, uiGridConstants.dataChange.COLUMN);
+  ($scope.columns[index].active) ? $scope.columns[index].active = false : $scope.columns[index].active = true;
+}
 
 function checkColumn(name) {
   for(var col in $scope.gridOptions.columnDefs) {
@@ -279,10 +264,5 @@ $scope.getPercentage = function() {
   return Math.ceil((percent/dataToLoad.length) * 100)
 }
 
-$scope.loadTable = function() {
-  //$scope.loadColumns();
-  $scope.loadData();
-}
-
-$scope.loadTable();
+$scope.loadData();
 }
