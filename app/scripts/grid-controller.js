@@ -130,8 +130,7 @@ function loadRecur() {
                   for(var key2 in data[key]) {
                     var rowInfo = {};
                     for(var key3 in data[key][key2]) {
-                      if(key3 !== 'id')
-                        rowInfo[key3] = data[key][key2][key3];
+                      if(key3 !== 'id') {
                         if(!checkColumn(key3)) {
                           var temp = {};
                           temp['name'] = key3;
@@ -140,27 +139,41 @@ function loadRecur() {
                         }
                         if(key3.toLowerCase() === 'year' && $scope.years.indexOf(data[key][key2][key3]) === -1)
                           $scope.years.push(data[key][key2][key3]);
+                        rowInfo[key3] = data[key][key2][key3];
                         }
-                        rowInfos.push(rowInfo);
                       }
-                    }
-                // parent contains children records ?
-                else {
-                    if(data[key].length > 0)
-                      row[key + ' at location?'] = 'yes';
-                    else
-                      row[key + ' at location?'] = 'no';
-                    if(!checkColumn(key + ' at location?')) {
-                      var temp = {};
-                      temp['name'] = key + ' at location?';
-                      temp['width'] = '200';
-                      $scope.gridOptions.columnDefs.push(temp);
+                      rowInfos.push(rowInfo);
                     }
                   }
+                // parent contains children records ?
+                else {
+                  if(!checkColumn(key + ' at location?')) {
+                    var temp = {};
+                    temp['name'] = key + ' at location?';
+                    temp['width'] = '200';
+                    $scope.gridOptions.columnDefs.push(temp);
+                  }
+                  if(data[key].length > 0)
+                    row[key + ' at location?'] = 'yes';
+                  else
+                    row[key + ' at location?'] = 'no';
                 }
-                // name of programs school or sponsor 'Object'
-                else if(data[key] instanceof Object) {
-                  row[key] = data[key]['NAME'];
+              }
+              // name of programs school or sponsor 'Object'
+              else if(data[key] instanceof Object) {
+                row[key] = data[key]['NAME'];
+                if(!checkColumn(key)) {
+                  var temp = {};
+                  temp['name'] = key;
+                  temp['width'] = '200';
+                  $scope.gridOptions.columnDefs.push(temp);
+                }
+              }
+              // regular data 'regular type'
+              else {
+                if(key.toLowerCase() === 'year' && $scope.years.indexOf(data[key]) === -1)
+                  $scope.years.push(data[key]);
+                  row[key] = data[key];
                   if(!checkColumn(key)) {
                     var temp = {};
                     temp['name'] = key;
@@ -168,62 +181,50 @@ function loadRecur() {
                     $scope.gridOptions.columnDefs.push(temp);
                   }
                 }
-                // regular data 'regular type'
+              }
+
+              // No info tables
+              if(rowInfos.length === 0)
+                doneData.push(row);
+                // At least 1 info table
                 else {
-                  if(key.toLowerCase() === 'year' && $scope.years.indexOf(data[key]) === -1)
-                    $scope.years.push(data[key]);
-                    row[key] = data[key];
-                    if(!checkColumn(key)) {
-                      var temp = {};
-                      temp['name'] = key;
-                      temp['width'] = '200';
-                      $scope.gridOptions.columnDefs.push(temp);
+                  for(var count = 0; count < rowInfos.length; count++) {
+                    var mainRow = {};
+                    for(var key in row) {
+                      mainRow[key] = row[key];
                     }
+                    for(var key in rowInfos[count]) {
+                      mainRow[key] = rowInfos[count][key];
+                    }
+                    doneData.push(mainRow);
                   }
                 }
 
-                // No info tables
-                if(rowInfos.length === 0)
-                  doneData.push(row);
-                  // At least 1 info table
-                  else {
-                    for(var count = 0; count < rowInfos.length; count++) {
-                      var mainRow = {};
-                      for(var key in row) {
-                        mainRow[key] = row[key];
-                      }
-                      for(var key in rowInfos[count]) {
-                        mainRow[key] = rowInfos[count][key];
-                      }
-                      doneData.push(mainRow);
-                    }
-                  }
+                // increment counter
+                i++;
 
-                  // increment counter
-                  i++;
+                // increment percentage done
+                if(i >= dataToLoad.length)
+                  percent = i;
+                  else if(i%50 === 0)
+                    percent += 50;
 
-                  // increment percentage done
-                  if(i >= dataToLoad.length)
-                    percent = i;
-                    else if(i%50 === 0)
-                      percent += 50;
+                    // Recur
+                    loadRecur();
+                  })
+                } else {
+                  // copy data to grid
+                  $scope.gridOptions.data = doneData;
+                  // default year option to most recent year
+                  $scope.yearSelected = $scope.years[$scope.years.length-1];
 
-                      // Recur
-                      loadRecur();
-                    })
-                  } else {
-                    // copy data to grid
-                    $scope.gridOptions.data = doneData;
-                    // default year option to most recent year
-                    $scope.yearSelected = $scope.years[$scope.years.length-1];
-
-                    // button toggle for columns
-                    $scope.columns = $scope.gridApi.grid.columns;
-                    for(var key in $scope.columns) {
-                      $scope.columns[key]['active'] = true;
-                    }
+                  // button toggle for columns
+                  $scope.columns = $scope.gridApi.grid.columns;
+                  for(var key in $scope.columns) {
+                    $scope.columns[key]['active'] = true;
                   }
                 }
+              }
     doneData.push(data)
 
     // increment counter
