@@ -7,11 +7,13 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- build:css css/schoolApp.min.css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css">
     <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css">
     <link rel="styleSheet" href="bower_components/angular-ui-grid/ui-grid.css"/>
     <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
   </head>
 
   <body ng-controller="LoginCtrl">
@@ -41,13 +43,11 @@
     <div class="container-fluid" style="padding:40px 30px 75px 30px">
         <div ui-view></div>
     </div>
-
-    <!--JQuery, Bootstrap, Angular-->
+    <!-- build:js js/schoolApp.min.js -->
     <script type="text/javascript" src="bower_components/angular/angular.js"></script>
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.js"></script>
     <script type="text/javascript" src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
     <script type="text/javascript" src="bower_components/modernizr/modernizr.js"></script>
-
     <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script type="text/javascript" src="bower_components/angular-resource/angular-resource.js"></script>
     <script type="text/javascript" src="bower_components/ng-table/ng-table.js"></script>
@@ -61,11 +61,11 @@
     <script type="text/javascript" src="bower_components/pdfmake/build/pdfmake.js"></script>
     <script type="text/javascript" src="bower_components/pdfmake/build/vfs_fonts.js"></script>
 
-    <!--My Scripts-->
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" src="scripts/grid-controller.js"></script>
     <script type="text/javascript" src="scripts/services.js"></script>
     <script type="text/javascript" src="scripts/directives.js"></script>
+    <!-- endbuild -->
    </body>
 </html>

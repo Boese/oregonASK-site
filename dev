@@ -1,0 +1,2 @@
+127.0.0.1 - - [Mon, 29 Dec 2014 18:20:01 GMT] "GET / HTTP/1.1" 200 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
+127.0.0.1 - - [Mon, 29 Dec 2014 18:20:08 GMT] "GET /partials/grid.html HTTP/1.1" 404 31 "http://localhost:5000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"

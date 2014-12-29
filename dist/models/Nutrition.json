@@ -1,0 +1,20 @@
+{
+  "model":{
+    "SITE_NAME":"text",
+    "SITE_NUMBER":"text",
+    "CNP_WEB_SCHOOL_NUMBER":"text",
+    "PROGRAM_TYPE":"text",
+    "STREET":"text",
+    "CITY":"text",
+    "ZIP":"text",
+    "STATE":"text",
+    "COUNTY":"text",
+    "School": {
+      "id":""
+    },
+    "Sponsor": {
+      "id":""
+    },
+    "NUTRITION_INFO":[]
+  }
+}

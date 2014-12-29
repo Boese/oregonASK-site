@@ -1,0 +1,23 @@
+{
+  "model": {
+    "YEAR":"number",
+    "AM_SNACK_SERVED":"checkbox",
+    "BREAKFAST_SERVED":"checkbox",
+    "LUNCH_SERVED":"checkbox",
+    "PM_SNACK_SERVED":"checkbox",
+    "SUPPER_SERVED":"checkbox",
+    "EVENING_SNACK_SERVED":"checkbox",
+    "OPR_JAN":"checkbox",
+    "OPR_FEB":"checkbox",
+    "OPR_MAR":"checkbox",
+    "OPR_APR":"checkbox",
+    "OPR_MAY":"checkbox",
+    "OPR_JUN":"checkbox",
+    "OPR_JUL":"checkbox",
+    "OPR_AUG":"checkbox",
+    "OPR_SEP":"checkbox",
+    "OPR_OCT":"checkbox",
+    "OPR_NOV":"checkbox",
+    "OPR_DEC":"checkbox"
+  }
+}
