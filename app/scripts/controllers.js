@@ -1,25 +1,26 @@
 'use strict';
 
 angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.select'])
-    .controller('DataCtrl',['$scope','$state',DataCtrl])
+    .controller('DataCtrl',['$scope','$state','$http','$cookieStore',DataCtrl])
     .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
     .controller('EditCtrl',['$scope','$state','$stateParams','Service', 'ModelService',EditCtrl])
-    .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService',LoginCtrl]);
+    .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService','Service',LoginCtrl]);
 
-function DataCtrl($scope, $state) {
+function DataCtrl($scope, $state, $http, $cookieStore) {
   $scope.url = $state.current.data.url;
   $scope.model = $state.current.data.model;   // name of Entity
   $scope.first = $state.current.data.first;    // name of first column in models list, searched by this
   $scope.second = $state.current.data.second;  // name of 2nd column in models list
   $scope.third = $state.current.data.third;    // name of 3rd column in models list
   $scope.returnstate = $state.current.data.returnstate;  // return state after create,update, or delete
+
+  $http.defaults.headers.common['Cache-Control'] = 'no-cache';
+  $http.defaults.headers.common['Token'] = $cookieStore.get('token');
 }
 
 // List of models
 function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams, Service) {
-    $scope.schools = {};
-    $scope.selectedSchools = {};
 
     $scope.getColumn = function(table,name) {
       return table[name];
@@ -28,7 +29,6 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
     // Sort models alphabetically, search based $scope.first
     $scope.load = function() {
       Service.query({table:$scope.model}, function(data) {
-        $scope.schools = data;
         var filterOb = {};
         var sortOb = {};
         filterOb[$scope.first] = undefined;
@@ -66,7 +66,7 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
         }
     }
 
-    $scope.load();
+  $scope.load();
 }
 
 // View a single model's data
@@ -237,13 +237,13 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
   $scope.loadModelJSON();
 }
 
-function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService) {
+function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService,Service) {
   $scope.user = { email:'',password:'',key:''};
   $scope.message = '';
 
   // Check if token cookie exists
   $scope.loggedin = function() {
-    if($cookieStore.get('token'))
+    if(($cookieStore.get('token') != null) && ($cookieStore.get('token') !== undefined))
         return true;
     else
         return false;
