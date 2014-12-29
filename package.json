@@ -1,6 +1,7 @@
 {
   "name": "angularjs",
   "version": "0.0.0",
+  "main": "dist/index.js",
   "dependencies": {
     "express": "^4.10.6",
     "express-logger": "0.0.3",
