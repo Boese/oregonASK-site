@@ -13,7 +13,7 @@ function Service($resource,$state,$cookieStore,$http) {
     // $resource will return data from rest-call
     // interceptor will fire on server responseError, delete token, redirect to login
     //  (session most likely expired)
-    return $resource('//localhost:8080/api/:table/:id',{table:'@_table',id:'@_id'},{
+    return $resource('http://oregonask-service.herokuapp.com/api/:table/:id',{table:'@_table',id:'@_id'},{
       // Set headers on Service request
         save: {
           method: 'put'
@@ -53,7 +53,7 @@ function popupService($window){
 function AuthService($resource, $base64,$http) {
     this.Authenticate = function(user,pass,key) {
       $http.defaults.headers.common['Cache-Control'] = 'no-cache';
-      return $resource('//localhost:8080/api/login',{}, {
+      return $resource('http://oregonask-service.herokuapp.com/api/login',{}, {
         login: {
             method : 'get',
             headers: {'Authorization':'Base ' + $base64.encode(user + ':' + pass)}

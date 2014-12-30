@@ -108,7 +108,7 @@ function checkColumn(name) {
   $scope.columns = [];
 
 function loadRecur() {
-  if(i < dataToLoad.length) {
+  if(i < dataToLoad.length && $state.current.url === '/grid') {
     Service.get({table:$scope.model, id:dataToLoad[i].id}).$promise
     .then(function(data) {
       data = data.toJSON();
@@ -200,8 +200,8 @@ function loadRecur() {
       // increment percentage done
       if(i >= dataToLoad.length)
         percent = i;
-      else if(i%50 === 0)
-        percent += 50;
+      else if(i%1 === 0)
+        percent += 1;
 
         // Recur
         loadRecur();
@@ -224,6 +224,22 @@ function loadRecur() {
 $scope.loadData = function() {
   Service.query({table:$scope.model}).$promise
   .then(function success(data) {
+    /*
+    for(var c = 0; c < data.length; c++) {
+      data[c] = data[c].toJSON();
+    }
+
+    for(var key in data[0]) {
+      var temp = {};
+      temp['name'] = key;
+      temp['width'] = '200';
+      $scope.gridOptions.columnDefs.push(temp);
+    }
+
+    $scope.gridOptions.data = data;
+    dataToLoad = data;
+    percent = dataToLoad.length;
+    */
     dataToLoad = data;
     loadRecur();
   })
