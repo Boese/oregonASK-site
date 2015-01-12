@@ -17,6 +17,13 @@ function DataCtrl($scope, $state, $http, $cookieStore) {
 
   $http.defaults.headers.common['Cache-Control'] = 'no-cache';
   $http.defaults.headers.common['Token'] = $cookieStore.get('token');
+
+  $scope.notSorted = function(obj){
+    if (!obj) {
+      return [];
+    }
+    return Object.keys(obj);
+  }
 }
 
 // List of models
@@ -74,13 +81,6 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
   $scope.modelOnly = {}; //data from model only, no sets
   $scope.modelArray = {}; //arrays joined to model
 
-  $scope.notSorted = function(obj){
-    if (!obj) {
-      return [];
-    }
-    return Object.keys(obj);
-  }
-
   $scope.load = function() {
     Service.get({table:$scope.model, id: $stateParams.id }).$promise
       .then(function(data) {
@@ -136,13 +136,6 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
       $state.go($scope.returnstate);
     })
   };
-
-  $scope.notSorted = function(obj){
-    if (!obj) {
-      return [];
-    }
-    return Object.keys(obj);
-  }
 
   $scope.expand = function(table) {
     ModelService.get({model:table}, function(data) {

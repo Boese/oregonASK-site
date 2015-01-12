@@ -11,9 +11,21 @@
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
     <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css">
     <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
     <link rel="styleSheet" href="bower_components/angular-ui-grid/ui-grid.css"/>
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
+
+    <style>
+    .select2 > .select2-choice.ui-select-match {
+      /* Because of the inclusion of Bootstrap */
+      height: 29px;
+    }
+
+    .selectize-control > .selectize-dropdown {
+      top: 36px;
+    }
+    </style>
   </head>
 
   <body ng-controller="LoginCtrl">
@@ -36,7 +48,8 @@
               <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="programs.list">Programs</a></li>
           </ul>
           <ul class="nav navbar-nav pull-right">
-            <li><button data-toggle="collapse" data-target=".navbar-collapse" ng-click="logout()" type="button" class="btn btn-default btn-sm navbar-btn pull-right">{{loginbutton}}</button></li>
+            <li style="padding-right:20px"><a style="color: white !important; background-color: #fc5c4f;" data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="contacts.list">Contacts</a></li>
+            <li style="padding-right:20px"><button data-toggle="collapse" data-target=".navbar-collapse" ng-click="logout()" type="button" class="btn btn-default btn-sm navbar-btn pull-right">{{loginbutton}}</button></li>
           </ul>
       </div>
     </nav>
@@ -64,6 +77,7 @@
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" src="scripts/grid-controller.js"></script>
+    <script type="text/javascript" src="scripts/contacts-controller.js"></script>
     <script type="text/javascript" src="scripts/services.js"></script>
     <script type="text/javascript" src="scripts/directives.js"></script>
     <!-- endbuild -->

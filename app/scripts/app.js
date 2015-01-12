@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('schoolApp', ['ui.router', 'ngResource', 'schoolApp.controllers','schoolApp.grid-controller', 'schoolApp.services', 'schoolApp.directives']);
+angular.module('schoolApp', ['ui.router', 'ngResource', 'schoolApp.controllers','schoolApp.grid-controller',
+  'schoolApp.contacts-controller','schoolApp.services', 'schoolApp.directives']);
 
 angular.module('schoolApp').config(function($stateProvider) {
   // Login
@@ -193,6 +194,26 @@ angular.module('schoolApp').config(function($stateProvider) {
     url: '/grid',
     templateUrl: 'partials/grid.html',
     controller: 'gridCtrl'
+  });
+
+  // CONTACT - For Each Entity with 'CRUD' operations
+  $stateProvider.state('contacts', { // state for showing all models
+    abstract: true,
+    url: '/contacts',
+    templateUrl: 'index.html',
+    controller: 'DataCtrl',
+    data: {
+      url:'contacts',
+      model:'Contact', // name of Entity
+      first: 'Category',
+      second: 'LAST_NAME',
+      third: 'EMAIL',
+      returnstate:'contacts.list'   // return state after create,update, or delete
+    }
+  }).state('contacts.list', {
+    url: '/',
+    controller: 'ContactsCtrl',
+    templateUrl: 'partials/contacts.html'
   });
 
 }).run(function($state){

@@ -1,8 +1,8 @@
 angular.module('schoolApp.grid-controller', ['ngAnimate','ui.grid','ui.grid.edit','ui.grid.resizeColumns',
 'ui.grid.selection', 'ui.grid.exporter','ui.grid.importer','ui.grid.moveColumns','ui.select'])
-.controller('gridCtrl',['$scope','$state','$stateParams','Service','ModelService','uiGridConstants', gridCtrl]);
+.controller('gridCtrl',['$scope','$state','$window','$stateParams','Service','ModelService','uiGridConstants', gridCtrl]);
 
-function gridCtrl($scope,$state,$stateParams,Service,ModelService,uiGridConstants) {
+function gridCtrl($scope,$state,$stateParams,$window,Service,ModelService,uiGridConstants) {
   $scope.$scope = $scope;
   $scope.msg = {};
   $scope.rowsSelected = 0;
@@ -219,7 +219,6 @@ function loadRecur() {
     }
   }
 }
-
 
 $scope.loadData = function() {
   Service.query({table:$scope.model}).$promise
