@@ -8,6 +8,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="css/1dac8720.schoolApp.min.css">
+
+    <style>
+    .select2 > .select2-choice.ui-select-match {
+      /* Because of the inclusion of Bootstrap */
+      height: 29px;
+    }
+
+    .selectize-control > .selectize-dropdown {
+      top: 36px;
+    }
+    </style>
   </head>
 
   <body ng-controller="LoginCtrl">
@@ -30,14 +41,14 @@
               <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="programs.list">Programs</a></li>
           </ul>
           <ul class="nav navbar-nav pull-right">
-            <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="contacts.list">Contacts</a></li>
-            <li><button data-toggle="collapse" data-target=".navbar-collapse" ng-click="logout()" type="button" class="btn btn-default btn-sm navbar-btn pull-right">{{loginbutton}}</button></li>
+            <li style="padding-right:20px"><a style="color: white !important; background-color: #fc5c4f;" data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="contacts.list">Contacts</a></li>
+            <li style="padding-right:20px"><button data-toggle="collapse" data-target=".navbar-collapse" ng-click="logout()" type="button" class="btn btn-default btn-sm navbar-btn pull-right">{{loginbutton}}</button></li>
           </ul>
       </div>
     </nav>
     <div class="container-fluid" style="padding:40px 30px 75px 30px">
         <div ui-view></div>
     </div>
-    <script src="js/0dcedd02.schoolApp.min.js"></script>
+    <script src="js/de87f2e3.schoolApp.min.js"></script>
    </body>
 </html>

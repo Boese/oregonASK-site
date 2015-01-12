@@ -1,4 +1,3 @@
-
 <div class="form-group" ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
   <label for="{{key}}" class="col-sm-4 control-label ng-class:{'text-danger': (key === first || key === second || key === third)}">{{key}}</label>
   <div ng-if="value.id === undefined" class="col-sm-8">

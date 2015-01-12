@@ -1,0 +1,149 @@
+<!--Page Header-->
+<div class="page-header text-center">
+  <h3>Contacts <small style="color:#fc5c4f"><span class="glyphicon glyphicon-hand-down" aria-hidden="true"></span> Select a category</small></h3>
+  <div class="row">
+
+    <!--Add New Category-->
+    <div class="col-xs-4 pull-left">
+      <!--Button trigger modal to add Category-->
+      <button type="button" class="btn btn-default btn-info" data-toggle="modal" data-target="#myModal">Add Category</button>
+      <!--Modal add Category-->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myModalLabel">New Category</h4>
+            </div>
+            <div class="modal-body">
+              <form class="form-horizontal">
+                <div class="form-group">
+                  <label class="col-sm-2 control-label">Category</label>
+                  <div class="col-sm-10">
+                    <input type="text" class="form-control" placeholder="Name" ng-model="newCategory.NAME">
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="saveCategory(newCategory)">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--Add New Contact-->
+    <div class="col-xs-4 pull-right">
+      <button type="button" ng-click="addContact()" class="btn btn-default btn-info">Add Contact</button>
+    </div>
+
+    <!--Category Filter-->
+    <div class="col-sm-3">
+      <select class="form-control"  ng-model='category' ng-click="clear()" ng-options="category.NAME for category in categories"></select>
+    </div>
+
+    <!--Delete Category-->
+    <div class="col-sm-1 hidden-xs" ng-if="category && category.NAME !== '**ALL**'">
+      <button type="button" ng-click="deleteCategory()" class="btn btn-default btn-danger">← Delete</button>
+    </div>
+    <div class="col-sm-1 hidden-sm hidden-md hidden-lg center-block" ng-if="category && category.NAME !== '**ALL**'">
+      <button type="button" ng-click="deleteCategory()" class="btn btn-default btn-danger">↑ Delete</button>
+    </div>
+
+  </div>
+</div>
+
+<!--Contact Search-->
+<div class="col-md-4">
+<h3 class="text-center" style="color:green">Search for a contact</h3>
+  <ui-select ng-model="contact.selected" theme="selectize" ng-disabled="disabled" on-select="close();loadContact($item)">
+    <ui-select-match placeholder="firstname lastname OR email">{{$select.selected.FULLNAME}} <small>{{$select.selected.EMAIL}}</small></ui-select-match>
+    <ui-select-choices repeat="contact in filteredContacts | propsFilter: {FULLNAME: $select.search, EMAIL: $select.search}">
+      <span ng-bind-html="contact.FULLNAME | highlight: $select.search"></span>
+      <small><span ng-bind-html="contact.EMAIL | highlight: $select.search"></span></small>
+    </ui-select-choices>
+  </ui-select>
+</div>
+
+<!--Contact Detail-->
+<div ng-if="entity" class="well col-md-8">
+  <h3 class="text-center" style="color:green">{{entity.FIRSTNAME}} {{entity.LASTNAME}}</h3>
+  <div class="row">
+    <!--Close Contact-->
+    <div class="col-xs-4"><button class="btn btn-warning center-block" ng-click="close()">{{closeText}}</button></div>
+    <!--Edit Contact-->
+    <div class="col-xs-4"><button class="btn btn-success center-block" ng-click="toggleEdit()">{{editText}}</button></div>
+    <!--Delete Contact-->
+    <div ng-if="!newContact" class="col-xs-4" ng-if><button class="btn btn-danger center-block" ng-click="delete()">Delete</button></div>
+  </div>
+</br>
+
+<div ng-if="!edit">
+
+  <div class="well" style="background:white">
+    <div ng-repeat="(key,value) in entity">
+      <p ng-if="!isArray(value) && display(key,value)"><i style="color:blue">{{key}}</i> : <b>{{value}}</b></p>
+    </div>
+  </div>
+
+  <ul class="list-group" ng-repeat="(key,value) in entity">
+    <li ng-if="isArray(value)" class="list-group-item">
+      <b style="color:purple">{{key}}</b>
+      <ul class="list-group" ng-repeat="data in value">
+        <li class="list-group-item">
+          <ul style="list-style-type:none" ng-repeat="(key2,value2) in data">
+            <li ng-if="display(key2,value2)"><i style="color:blue">{{key2}}</i> : <b>{{value2}}</b></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+
+</div>
+
+  <!--Contact Edit-->
+  <div ng-if="edit">
+    <!--Contact Only-->
+    <div class="well" style="background:white">
+      <form class="form-horizontal" ng-repeat="(key,value) in entity">
+        <div class="form-group" ng-if="!isArray(value) && display(key,value)">
+          <label class="col-sm-3 control-label"><b style="color:blue">{{key}}</b></label>
+          <div class="col-sm-9">
+            <input type="text" class="form-control" ng-model="entity[key]">
+          </div>
+        </div>
+      </form>
+    </div>
+
+      <!--Contacts One to Manys-->
+      <ul class="list-group" ng-repeat="(key,value) in joins track by $index">
+        <li class="list-group-item" ng-if="isArray(value)">
+          <b style="color:purple">{{key}}</b>
+          <form class="form-horizontal" ng-repeat="(key2,value2) in value track by $index">
+            <div ng-repeat="(key3,value3) in value2 track by $index">
+              <div class="form-group" ng-if="display(key3,value3)">
+                <label class="col-sm-3 control-label"><b style="color:blue">{{key3}}</b></label>
+                <div class="col-sm-9">
+                  <input ng-if="key !== 'CATEGORYS'" type="text" class="form-control" ng-model="entity[key][key2][key3]">
+                  <ui-select ng-if="key === 'CATEGORYS'" ng-model="entity[key][key2]" theme="selectize" ng-disabled="disabled">
+                    <ui-select-match placeholder="search for category">{{$select.selected.NAME}} </ui-select-match>
+                    <ui-select-choices repeat="category in categories | filter: $select.search">
+                      <span ng-bind-html="category.NAME | highlight: $select.search"></span>
+                    </ui-select-choices>
+                  </ui-select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <button class="col-sm-offset-2 btn btn-danger btn-sm" ng-click="remove(key,key2)">Remove ↑</button>
+            </div>
+          </br>
+        </form>
+        <button class="btn btn-info btn-sm" ng-click="add(key)">Add {{key}}</button>
+      </li>
+    </ul>
+  </div>
+
+</div>
