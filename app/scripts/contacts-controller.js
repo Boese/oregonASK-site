@@ -187,7 +187,7 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
         .catch(function error(error) {
           console.log(error);
         })
-    }
+      }
   }
 
   // Sync Join tables data with Entity Join tables
@@ -199,7 +199,6 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
         }
       }
     }
-    console.log($scope.joins);
   }
 
   $scope.isArray = function(value) {
@@ -210,6 +209,12 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
 
   $scope.display = function(key,value) {
     if(value !== undefined && key !== 'id' && key !== 'CONTACT' && key !== '$$hashKey' && key !== 'CONTACTS')
+      return true;
+    return false;
+  }
+
+  $scope.displayView = function(key,value) {
+    if(value && key !== 'id' && key !== 'CONTACT' && key !== '$$hashKey' && key !== 'CONTACTS')
       return true;
     return false;
   }

@@ -84,7 +84,7 @@
 
   <div class="well" style="background:white">
     <div ng-repeat="(key,value) in entity">
-      <p ng-if="!isArray(value) && display(key,value)"><i style="color:blue">{{key}}</i> : <b>{{value}}</b></p>
+      <p ng-if="!isArray(value) && displayView(key,value)"><i style="color:blue">{{key}}</i> : <b>{{value}}</b></p>
     </div>
   </div>
 
@@ -94,7 +94,7 @@
       <ul class="list-group" ng-repeat="data in value">
         <li class="list-group-item">
           <ul style="list-style-type:none" ng-repeat="(key2,value2) in data">
-            <li ng-if="display(key2,value2)"><i style="color:blue">{{key2}}</i> : <b>{{value2}}</b></li>
+            <li ng-if="displayView(key2,value2)"><i style="color:blue">{{key2}}</i> : <b>{{value2}}</b></li>
           </ul>
         </li>
       </ul>
