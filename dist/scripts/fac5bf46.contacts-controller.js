@@ -42,7 +42,6 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
   $scope.filteredContacts = [];
   $scope.contact = {};
 
-
   // New Category
   $scope.saveCategory = function(newCategory) {
     Service.save({table:'Category'}, newCategory, function() {
@@ -63,7 +62,6 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
   function resyncCategories() {
     $scope.clear();
     loadCategories();
-    loadContacts();
   }
 
   $scope.closeText = "Close";
@@ -116,26 +114,25 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
       $scope.filteredContacts = [];
       // All Categories
       if(newValue.id === 0)
-        $scope.filteredContacts = contacts;
+        loadContacts();
 
-      // Select Category
-      else {
-        for(var i = 0; i < contacts.length; i++) {
-          for(var j = 0; j < contacts[i]['CATEGORYS'].length; j++) {
-            try {
-              if(contacts[i]['CATEGORYS'][j]['id'] === newValue.id) {
-                $scope.filteredContacts.push(contacts[i]);
-                break;
-              } else if(contacts[i]['CATEGORYS'][j] === newValue.id) {
-                $scope.filteredContacts.push(contacts[i]);
-                break;
-              }
-            }catch (err) {}
-          }
-        }
-      }
+      loadCategory(newValue.id)
     })
   };
+
+  // Load Contacts from Category Selected
+  function loadCategory(id) {
+    Service.get({table:$scope.first,id:id}).$promise
+    .then(function success(data) {
+      $scope.filteredContacts = data.contacts;
+      for(var key in $scope.filteredContacts) {
+        $scope.filteredContacts[key]['FULLNAME'] = $scope.filteredContacts[key]['FIRSTNAME'] + ' ' + $scope.filteredContacts[key]['LASTNAME'];
+      }
+    })
+    .catch(function error(error) {
+      console.log(error);
+    })
+  }
 
   // Load Categories Set Default to first category
   function loadCategories() {
@@ -144,26 +141,25 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
         $scope.categories = data;
         $scope.categories.push({
           'id': 0,
-          'NAME': '**ALL**'
+          'NAME': '**ALL** (slower)'
         });
         $scope.category = $scope.categories[0];
+        loadCategory($scope.categories[0].id);
+        watchCategory();
       })
       .catch(function error(error) {
         console.log(error);
       })
   }
 
-  // Load Contacts
-  var contacts;
+  // Load Contacts from all Categories
   function loadContacts() {
-    contacts = [];
     Service.query({table:'Contact'}).$promise
     .then(function success(data) {
-      contacts = data;
-      for(var key in contacts) {
-        contacts[key]['FULLNAME'] = contacts[key]['FIRSTNAME'] + ' ' + contacts[key]['LASTNAME'];
+      $scope.filteredContacts = data;
+      for(var key in $scope.filteredContacts) {
+        $scope.filteredContacts[key]['FULLNAME'] = $scope.filteredContacts[key]['FIRSTNAME'] + ' ' + $scope.filteredContacts[key]['LASTNAME'];
       }
-      watchCategory();
     })
     .catch(function error(error) {
       console.log(error);
@@ -274,15 +270,12 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
       if(!inCurrentCategory) {
         $scope.clear();
         loadCategories();
-        loadContacts()
       } else {
-        loadContacts()
         $scope.loadContact($scope.entity);
       }
     } catch(err) {
       $scope.clear();
       loadCategories();
-      loadContacts();
       $scope.loadContact($scope.entity);
     }
 
@@ -301,11 +294,9 @@ function contactsCtrl($scope,$state,$stateParams,popupService,$filter,ngTablePar
       Service.delete({table:$scope.model, id:$scope.entity.id},function(){
         $scope.clear();
         loadCategories();
-        loadContacts();
       });
     }
   }
 
   loadCategories();
-  loadContacts();
 }

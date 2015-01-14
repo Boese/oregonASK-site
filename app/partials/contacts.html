@@ -58,7 +58,7 @@
 <!--Contact Search-->
 <div class="col-md-4">
 <h3 class="text-center" style="color:green">Search for a contact</h3>
-  <ui-select ng-model="contact.selected" theme="selectize" ng-disabled="disabled" on-select="close();loadContact($item)">
+  <ui-select ng-model="contact.selected" theme="selectize" ng-disabled="disabled" on-select="close();loadContact($item)" reset-search-input="true">
     <ui-select-match placeholder="firstname lastname OR email">{{$select.selected.FULLNAME}} <small>{{$select.selected.EMAIL}}</small></ui-select-match>
     <ui-select-choices repeat="contact in filteredContacts | propsFilter: {FULLNAME: $select.search, EMAIL: $select.search}">
       <span ng-bind-html="contact.FULLNAME | highlight: $select.search"></span>
@@ -69,7 +69,7 @@
 
 <!--Contact Detail-->
 <div ng-if="entity" class="well col-md-8">
-  <h3 class="text-center" style="color:green">{{entity.FIRSTNAME}} {{entity.LASTNAME}}</h3>
+  <h3 class="text-center" style="color:blue">{{entity.FIRSTNAME}} {{entity.LASTNAME}}</h3>
   <div class="row">
     <!--Close Contact-->
     <div class="col-xs-4"><button class="btn btn-warning center-block" ng-click="close()">{{closeText}}</button></div>

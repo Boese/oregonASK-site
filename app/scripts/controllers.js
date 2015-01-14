@@ -5,7 +5,7 @@ angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.
     .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
     .controller('EditCtrl',['$scope','$state','$stateParams','Service', 'ModelService',EditCtrl])
-    .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService','Service',LoginCtrl]);
+    .controller('LoginCtrl',['$scope','$state','$http','$stateParams','$cookieStore','AuthService','Service',LoginCtrl]);
 
 function DataCtrl($scope, $state, $http, $cookieStore) {
   $scope.url = $state.current.data.url;
@@ -230,7 +230,10 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
   $scope.loadModelJSON();
 }
 
-function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService,Service) {
+function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,Service) {
+  $http.defaults.headers.common['Cache-Control'] = 'no-cache';
+  $http.defaults.headers.common['Token'] = $cookieStore.get('token');
+
   $scope.user = { email:'',password:'',key:''};
   $scope.message = '';
 

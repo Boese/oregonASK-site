@@ -34,7 +34,6 @@ function popupService($window){
 // (uses Basic Authentication)
 function AuthService($resource, $base64,$http) {
     this.Authenticate = function(user,pass,key) {
-      $http.defaults.headers.common['Cache-Control'] = 'no-cache';
       return $resource('http://oregonask-service.herokuapp.com/api/login',{}, {
       //return $resource('http://0.0.0.0:8080/api/login',{}, {
         login: {

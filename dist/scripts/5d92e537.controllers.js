@@ -5,7 +5,7 @@ angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.
     .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
     .controller('EditCtrl',['$scope','$state','$stateParams','Service', 'ModelService',EditCtrl])
-    .controller('LoginCtrl',['$scope','$state','$stateParams','$cookieStore','AuthService','Service',LoginCtrl]);
+    .controller('LoginCtrl',['$scope','$state','$http','$stateParams','$cookieStore','AuthService','Service',LoginCtrl]);
 
 function DataCtrl($scope, $state, $http, $cookieStore) {
   $scope.url = $state.current.data.url;
@@ -17,6 +17,13 @@ function DataCtrl($scope, $state, $http, $cookieStore) {
 
   $http.defaults.headers.common['Cache-Control'] = 'no-cache';
   $http.defaults.headers.common['Token'] = $cookieStore.get('token');
+
+  $scope.notSorted = function(obj){
+    if (!obj) {
+      return [];
+    }
+    return Object.keys(obj);
+  }
 }
 
 // List of models
@@ -74,13 +81,6 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
   $scope.modelOnly = {}; //data from model only, no sets
   $scope.modelArray = {}; //arrays joined to model
 
-  $scope.notSorted = function(obj){
-    if (!obj) {
-      return [];
-    }
-    return Object.keys(obj);
-  }
-
   $scope.load = function() {
     Service.get({table:$scope.model, id: $stateParams.id }).$promise
       .then(function(data) {
@@ -136,13 +136,6 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
       $state.go($scope.returnstate);
     })
   };
-
-  $scope.notSorted = function(obj){
-    if (!obj) {
-      return [];
-    }
-    return Object.keys(obj);
-  }
 
   $scope.expand = function(table) {
     ModelService.get({model:table}, function(data) {
@@ -237,7 +230,10 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
   $scope.loadModelJSON();
 }
 
-function LoginCtrl($scope, $state, $stateParams,$cookieStore,AuthService,Service) {
+function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,Service) {
+  $http.defaults.headers.common['Cache-Control'] = 'no-cache';
+  $http.defaults.headers.common['Token'] = $cookieStore.get('token');
+
   $scope.user = { email:'',password:'',key:''};
   $scope.message = '';
 
