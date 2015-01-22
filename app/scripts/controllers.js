@@ -90,8 +90,8 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
         data = data.toJSON();
         $scope.modelOnly[parentName] = data['NAME'];
       })
-      .catch(function error(error) {
-        console.log(error);
+      .catch(function error(err) {
+        console.log(err);
       });
   }
 
@@ -114,8 +114,8 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
           }
         }
       })
-      .catch(function error(error) {
-        console.log(error);
+      .catch(function error(err) {
+        console.log(err);
       });
   };
 
@@ -253,9 +253,9 @@ function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,
   $scope.message = '';
 
   // On load remove token
-  (function clearTokens() {
-    $cookieStore.remove('token');
-  })();
+  //(function clearTokens() {
+  //  $cookieStore.remove('token');
+  //})();
 
   $scope.loggedin = function() {
     if(($cookieStore.get('token') != null) && ($cookieStore.get('token') !== undefined))

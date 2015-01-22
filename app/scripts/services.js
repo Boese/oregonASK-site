@@ -1,14 +1,14 @@
 'use strict';
 
-angular.module('schoolApp.services',['base64','ngCookies'])
-  .factory('Service',['$resource','$state','$cookieStore','$http',Service])
+angular.module('schoolApp.services',['base64'])
+  .factory('Service',['$resource','$state','$http','$cookieStore',Service])
   .factory('ModelService',['$resource',ModelService])
   .service('popupService',['$window',popupService])
   .service('AuthService',['$resource','$base64','$http',AuthService])
-  .service('ContactService',['$resource',ContactService]);
+  .factory('ContactService',['$resource',ContactService]);
 
 // Rest Service methods 'get','put','delete'
-function Service($resource,$state,$cookieStore,$http) {
+function Service($resource,$state,$http) {
     // $resource will return data from rest-call
     //return $resource('http://oregonask-service.herokuapp.com/api/:table/:id',{table:'@_table',id:'@_id'},{
     return $resource('http://0.0.0.0:8080/api/:table/:id',{table:'@_table',id:'@_id'},{
@@ -50,7 +50,7 @@ function AuthService($resource, $base64,$http) {
 };
 
 function ContactService($resource) {
-  return $resource('https://api.constantcontact.com/v2/contacts?api_key=n7pgx4r72v4gaz3xutqfreuk&access_token=2dd73999-fa01-407d-848f-2ae5c7bee3e0', {}, {
+  return $resource('http://0.0.0.0:8080/api/contactsAPI/:table', {table:'@_table'}, {
       save: {
         method: 'put'
       }

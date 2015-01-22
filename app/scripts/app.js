@@ -201,19 +201,15 @@ angular.module('schoolApp').config(function($stateProvider) {
     abstract: true,
     url: '/contacts',
     templateUrl: 'index.html',
-    controller: 'DataCtrl',
-    data: {
-      url:'contacts',
-      model:'Contact', // name of Entity
-      first: 'Category',
-      second: 'LAST_NAME',
-      third: 'EMAIL',
-      returnstate:'contacts.list'   // return state after create,update, or delete
-    }
+    controller: 'DataCtrl'
   }).state('contacts.list', {
-    url: '/',
     controller: 'NewContactsCtrl',
     templateUrl: 'partials/new-contacts.html'
+  }).state('contacts.list.view', {
+    url: '/contact',
+    controller: 'ContactViewCtrl',
+    templateUrl: 'partials/new-contacts-view.html',
+    params:{contact:null,lists:null,campaigns:null}
   });
 
 }).run(function($state){

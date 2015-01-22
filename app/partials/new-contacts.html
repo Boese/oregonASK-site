@@ -1,0 +1,47 @@
+<div ng-show="state.is('contacts.list')">
+  <div class="row text-center">
+    <h3>
+      <div class="col-xs-12">
+        Contacts <small><i># of contacts showing: {{count}}</i></small>
+      </div>
+      <div class="col-sm-2 col-sm-offset-5">
+        <select class="form-control" ng-model="list" ng-options="list.name for list in lists"></select>
+      </div>
+    </h3>
+  </div>
+  <br>
+
+  <div class="row">
+    <form class="form-inline">
+      <div class="form-group">
+        <label for="selectList" class="text-info">Search By</label>
+        <select id="selectList" class="form-control" ng-model="searchOption" ng-options="searchOption for searchOption in searchOptions"></select>
+      </div>
+      <div class="form-group">
+        <input type="text" ng-model="tableParams.filter()[searchOption]" class="form-control" placeholder="Enter {{searchOption}}">
+      </div>
+      <div class="form-group">
+        <button class="btn btn-info" ng-click="tableParams.filter()[searchOption] = ''">Clear</button>
+      </div>
+      <div class="form-group pull-right">
+        <label for="selectList" class="text-info">Select a Category</label>
+        <select id="selectList" class="form-control" ng-model="list" ng-options="list.name for list in lists"></select>
+      </div>
+    </form>
+  </div>
+</div>
+<br>
+
+<div ng-show="state.is('contacts.list')" class="table-responsive">
+  <table style="word-wrap:break-word" ng-table="tableParams" class="table table-condensed table-hover table-bordered">
+    <tr ng-repeat="mod in $data" ng-click="loadContact(mod)">
+      <td data-title="'First Name'" sortable="'first_name'" class="col-md-2">{{mod.first_name}}</td>
+      <td data-title="'Last Name'" sortable="'last_name'" class="col-md-2">{{mod.last_name}}</td>
+      <td data-title="'Email'" sortable="'email_address'" class="col-md-2">{{mod.email_address}}</td>
+      <td data-title="'Company'" sortable="'company_name'" class="col-md-2">{{mod.company_name}}</td>
+      <td data-title="'City State'" sortable="'addresses[0].city'" class="col-md-2">{{mod.addresses[0].city}} {{mod.addresses[0].state}}</td>
+    </tr>
+  </table>
+</div>
+
+<div ng-show="state.is('contacts.list.view')" ui-view></div>
