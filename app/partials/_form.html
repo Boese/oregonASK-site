@@ -1,8 +1,7 @@
 <div class="form-group" ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
   <label for="{{key}}" class="col-sm-4 control-label ng-class:{'text-danger': (key === first || key === second || key === third)}">{{key}}</label>
   <div ng-if="value.id === undefined" class="col-sm-8">
-    <textarea ng-if="value === 'textarea'" type="{{value}}" ng-model="entity[key]" class="form-control" rows="6" id="{{key}}" placeholder="{{key}}?"></textarea>
-    <input ng-if="value !== 'textarea'" type="{{value}}" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
+    <input type="text" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
   </div>
   <div ng-if="value.id !== undefined" class="col-sm-8">
     <p style="color:green">Search for {{key}}
@@ -28,8 +27,7 @@
     <div class="form-group" ng-repeat="key3 in notSorted(value2)" ng-init="value3 = value2[key3]">
       <label for="{{key3}}" class="col-sm-4 control-label">{{key3}}</label>
       <div class="col-sm-8">
-        <textarea ng-if="value3 === 'textarea'" type="{{value3}}" ng-model="entity[key][key2][key3]" class="form-control" rows="6" id="{{key3}}" placeholder="{{key3}}?"></textarea>
-        <input ng-if="value3 !== 'textarea'" type="{{value3}}" ng-model="entity[key][key2][key3]" class="form-control" id="{{key3}}" placeholder="{{key3}}?"/>
+        <input type="text" ng-model="entity[key][key2][key3]" class="form-control" id="{{key3}}" placeholder="{{key3}}?"/>
       </div>
     </div>
     <button ng-click="$event.preventDefault(); remove(key,key2)" class="btn btn-danger center-block">Remove ↑ {{key}}</button>

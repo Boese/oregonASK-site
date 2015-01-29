@@ -1,8 +1,8 @@
 
 <div class="row text-center">
   <h3>All {{model}}s</h3>
-  <button class="btn btn-info" ui-sref="{{url}}.grid">Export {{url}} data</button>
-  <button class="btn btn-success" ui-sref="{{url}}.new">Add New {{mode}}</button>
+  <button class="btn btn-info" ui-sref="data.grid({model:model})">Export {{model}} data</button>
+  <button class="btn btn-success" ui-sref="data.new({model:model})">Add New {{mode}}</button>
 </div>
 <hr>
 
@@ -42,7 +42,7 @@
       <td>{{getColumn(mod,first)}}</td>
       <td>{{getColumn(mod,second)}}</td>
       <td>{{getColumn(mod,third)}}</td>
-      <td><a class="btn btn-primary" ui-sref="{{url}}.view({id:mod.id})">View</a></td>
+      <td><a class="btn btn-primary" ui-sref="data.view({model:model,id:mod.id})">View</a></td>
       <td><a class="btn btn-danger"  ng-click="delete(mod,mod.id)">Delete</a></td>
     </tr>
   </table>

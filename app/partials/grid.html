@@ -42,8 +42,6 @@
       <span class="ui-grid-exporter-csv-link">&nbsp</span>
     </div>
   </form>
-
-  <br>
   <hr>
 
   <div class="row">
@@ -54,20 +52,17 @@
         <li style="color:green"><strong>Number of rows selected: </strong> {{ rowsSelected | number }}</li>
       </ul>
     </div>
+    <div class="btn-group pull-right" dropdown is-open="status.isopen">
+      <button type="button" class="btn btn-info dropdown-toggle" dropdown-toggle ng-disabled="disabled">
+        Toggle Visible Columns <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li ng-repeat="column in columns" role="presentation" ng-class="{'active': (!column.active)}"><a role="menuitem" tabindex="-1" ng-click="toggleColumns($index)">{{column.displayName}}</a></li>
+      </ul>
+    </div>
   </div>
-
   <hr>
-  <div class="dropdown">
-    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-      Toggle Visible Columns
-      <span class="caret"></span>
-    </button>
-    <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" >
-      <li ng-repeat="column in columns" role="presentation" ng-class="{'active': (!column.active)}"><a role="menuitem" tabindex="-1" ng-click="toggleColumns($index)">{{column.displayName}}</a></li>
-    </ul>
-  </div>
 
-  <br>
   <div style="height:500px" ui-grid="gridOptions" class="grid" external-scopes="$scope"
   ui-grid-edit ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-importer ui-grid-move-columns></div>
 </div>

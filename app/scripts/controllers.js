@@ -1,24 +1,34 @@
 'use strict';
 
 angular.module('schoolApp.controllers', ['ngTable','ngCookies','ngSanitize','ui.select'])
-    .controller('DataCtrl',['$scope','$state','$http','$cookieStore',DataCtrl])
-    .controller('ListCtrl',['$scope','$state','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
+    .controller('DataCtrl',['$scope','$state','$http','$cookieStore','Service',DataCtrl])
+    .controller('ListCtrl',['$scope','$state','$stateParams','popupService','$window','$filter','ngTableParams','Service',ListCtrl])
     .controller('ViewCtrl',['$scope','$state','$stateParams','Service',ViewCtrl])
-    .controller('EditCtrl',['$scope','$state','$stateParams','Service', 'ModelService',EditCtrl])
-    .controller('LoginCtrl',['$scope','$state','$http','$stateParams','$cookieStore','AuthService','Service',LoginCtrl]);
+    .controller('EditCtrl',['$scope','$state','$stateParams','Service',EditCtrl])
+    .controller('LoginCtrl',['$scope','$rootScope','$state','$stateParams','$cookieStore','AuthService',LoginCtrl]);
 
-function DataCtrl($scope, $state, $http, $cookieStore) {
-  try {
-    $scope.url = $state.current.data.url;
-    $scope.model = $state.current.data.model;   // name of Entity
-    $scope.first = $state.current.data.first;    // name of first column in models list, searched by this
-    $scope.second = $state.current.data.second;  // name of 2nd column in models list
-    $scope.third = $state.current.data.third;    // name of 3rd column in models list
-    $scope.returnstate = $state.current.data.returnstate;  // return state after create,update, or delete
-  } catch(err) {}
-
+function DataCtrl($scope, $state, $http, $cookieStore,Service) {
   $http.defaults.headers.common['Cache-Control'] = 'no-cache';
   $http.defaults.headers.common['Token'] = $cookieStore.get('token');
+
+  $scope.dataTables = [];
+  $scope.$on('initialize',function(event,args) {
+    $http.defaults.headers.common['Token'] = args.token;
+    Service.query({table:'initialize'}).$promise
+      .then(function success(data) {
+        $scope.dataTables = data;
+      })
+      .catch(function error(err) {
+        $state.go('data.login');
+      })
+  })
+
+  $scope.setTable = function(table) {
+    $scope.model = table.model;
+    $scope.first = table.first;
+    $scope.second = table.second;
+    $scope.third = table.third;
+  }
 
   $scope.notSorted = function(obj){
     if (!obj) {
@@ -29,7 +39,9 @@ function DataCtrl($scope, $state, $http, $cookieStore) {
 }
 
 // List of models
-function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams, Service) {
+function ListCtrl($scope, $state,$stateParams, popupService, $window, $filter, ngTableParams, Service) {
+
+    $scope.model = $stateParams.model;
 
     $scope.getColumn = function(table,name) {
       return table[name];
@@ -37,43 +49,53 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
 
     // Sort models alphabetically, search based $scope.first
     $scope.load = function() {
-      Service.query({table:$scope.model}, function(data) {
-        var filterOb = {};
-        var sortOb = {};
-        filterOb[$scope.first] = undefined;
-        filterOb[$scope.second] = undefined;
-        filterOb[$scope.third] = undefined;
-        sortOb[$scope.first] = 'asc';
+      Service.query({table:$scope.model}).$promise
+        .then(function success(data) {
+          var filterOb = {};
+          var sortOb = {};
+          filterOb[$scope.first] = undefined;
+          filterOb[$scope.second] = undefined;
+          filterOb[$scope.third] = undefined;
+          sortOb[$scope.first] = 'asc';
 
-        $scope.tableParams = new ngTableParams({
-              page: 1,
-              count: 10,
-              filter: filterOb,
-              sorting: sortOb,
-            }, {
-              total: data.length,
-              getData: function($defer, params) {
-                var filteredData = params.filter() ?
-                        $filter('filter')(data, params.filter()) :
-                        data;
-                var orderedData = params.sorting() ?
-                        $filter('orderBy')(filteredData, params.orderBy()) :
-                        data;
+          $scope.tableParams = new ngTableParams({
+            page: 1,
+            count: 10,
+            filter: filterOb,
+            sorting: sortOb,
+          }, {
+            total: data.length,
+            getData: function($defer, params) {
+              var filteredData = params.filter() ?
+              $filter('filter')(data, params.filter()) :
+              data;
+              var orderedData = params.sorting() ?
+              $filter('orderBy')(filteredData, params.orderBy()) :
+              data;
 
-                params.total(orderedData.length); // set total for recalc pagination
-                $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
-              }
-            })
-      })
-    }
+              params.total(orderedData.length); // set total for recalc pagination
+              $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+            }
+          })
+        })
+        .catch(function error(err) {
+          $state.go('data.login');
+        })
+      }
+
+
 
   $scope.delete=function(mod,id){
-        if(popupService.showPopup('Really delete this?')){
-            mod.$delete({table:$scope.model, id: id},function(){
-                $state.go($scope.returnstate);
-            });
-        }
-    }
+    if(popupService.showPopup('Really delete this?')) {
+        mod.$delete({table:$scope.model, id: id}).$promise
+          .then(function success(data) {
+            $state.go('data.list');
+          })
+          .catch(function error(err) {
+            $state.go('data.login')
+          })
+        };
+  }
 
   $scope.load();
 }
@@ -82,18 +104,6 @@ function ListCtrl($scope, $state, popupService, $window, $filter, ngTableParams,
 function ViewCtrl($scope,$state,$stateParams, Service) {
   $scope.modelOnly = {}; //data from model only, no sets
   $scope.modelArray = {}; //arrays joined to model
-
-  // Load parent name (school/sponsor)
-  function loadParent(parentName,id) {
-    Service.get({table:parentName, id:id}).$promise
-      .then(function success(data) {
-        data = data.toJSON();
-        $scope.modelOnly[parentName] = data['NAME'];
-      })
-      .catch(function error(err) {
-        console.log(err);
-      });
-  }
 
   function load() {
     Service.get({table:$scope.model, id: $stateParams.id }).$promise
@@ -106,8 +116,8 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
               $scope.modelArray[key + index] = data[key][index];
             }
           }
-          else if(key.indexOf('_ID') !== -1) {
-            loadParent(key.replace('_ID',''),data[key]);
+          else if(data[key] instanceof Object) {
+            $scope.modelOnly[key] = data[key].NAME;
           }
           else {
             $scope.modelOnly[key] = data[key];
@@ -115,7 +125,7 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
         }
       })
       .catch(function error(err) {
-        console.log(err);
+        $state.go('data.login');
       });
   };
 
@@ -127,7 +137,7 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
 }
 
 // Edit a model
-function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
+function EditCtrl($scope, $state, $stateParams, Service) {
   $scope.modelOnly = {};
   $scope.modelArray = {};
   $scope.modelJSON = {};
@@ -150,14 +160,18 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
       }
     // If valid, save model to database
     Service.save({table:$scope.model}, $scope.entity, function() {
-      $state.go($scope.returnstate);
+      $state.go('data.list');
     })
   };
 
   $scope.expand = function(table) {
-    ModelService.get({model:table}, function(data) {
-      $scope.modelJSON[table] = data.model;
-    })
+    Service.get({table:table,id:'new'}).$promise
+      .then(function success(data) {
+        $scope.modelJSON[table] = data.toJSON();
+      })
+      .catch(function error(err) {
+        $state.go('data.login')
+      })
   }
 
   $scope.add = function(table) {
@@ -188,6 +202,9 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
         $scope.tables.pop();
         $scope.loadTables();
       })
+      .catch(function error(err) {
+        $state.go('data.login');
+      })
     }
 
   $scope.loadModelService = function() {
@@ -197,17 +214,15 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
       // Assign modelOnly data to modelOnly & array data to modelArray
       for(var key in data) {
         if(data[key] instanceof Array) {
-          if(key.indexOf('INFO') != -1) {
-            $scope.modelArray[key] = [];
-            $scope.entity[key] = [];
-            for(var key2 in data[key]) {
-              var info = {};
-              for(var key3 in data[key][key2]) {
-                info[key3] = data[key][key2][key3];
-              }
-              $scope.modelArray[key].push($scope.modelJSON[key]);
-              $scope.entity[key].push(info);
+          $scope.modelArray[key] = [];
+          $scope.entity[key] = [];
+          for(var key2 in data[key]) {
+            var info = {};
+            for(var key3 in data[key][key2]) {
+              info[key3] = data[key][key2][key3];
             }
+            $scope.modelArray[key].push($scope.modelJSON[key]);
+            $scope.entity[key].push(info);
           }
         }
         else if(data[key] instanceof Object) {
@@ -219,15 +234,22 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
           $scope.entity[key] = data[key];
         }
       }
-    });
+    })
+    .catch(function error(err) {
+      $state.go('data.login');
+    })
   }
 
-  $scope.loadModelJSON = function() {
-    ModelService.get({model:$scope.model}).$promise
-      .then(function success(data){
-        data = data.model;
+  $scope.loadNewModel = function() {
+    Service.get({table:$scope.model, id:'new'}).$promise
+      .then(function success(data) {
+        data = data.toJSON();
         for(var key in data) {
           if(data[key] instanceof Array) {
+            if(key[key.length-1].toLowerCase() === 's') {
+              key = key.slice(0, - 1);
+            }
+            key = key.replace('_','');
             $scope.expand(key);
             $scope.entity[key] = [];
             $scope.modelArray[key] = [];
@@ -241,21 +263,26 @@ function EditCtrl($scope, $state, $stateParams, Service, ModelService) {
           }
         }
         $scope.loadTables();
-      });
-    }
+      })
+      .catch(function error(err) {
+        $state.go('data.login');
+      })
+  }
 
-  $scope.loadModelJSON();
+  $scope.loadNewModel();
 }
 
-function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,Service) {
+function LoginCtrl($scope, $rootScope, $state, $stateParams,$cookieStore,AuthService) {
 
   $scope.user = { email:'',password:'',key:''};
   $scope.message = '';
 
   // On load remove token
-  //(function clearTokens() {
-  //  $cookieStore.remove('token');
-  //})();
+  (function clearTokens() {
+    $cookieStore.remove('token');
+    $scope.$broadcast('form-validation-reset');
+    $scope.user = { email:'',password:'',key:''};
+  })();
 
   $scope.loggedin = function() {
     if(($cookieStore.get('token') != null) && ($cookieStore.get('token') !== undefined))
@@ -267,14 +294,8 @@ function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,
   // Toggle Login/Logout based on cookie token
   $scope.$watch('loggedin()', function(){
     $scope.loginbutton = $scope.loggedin() ? 'Logout' : 'Login';
-    $scope.loginTitle = $scope.loggedin() ? 'Your already logged in' : 'Please Login';
+    $scope.loginTitle = $scope.loggedin() ? 'Your logged in, Select a Data Table above' : 'Please Login';
   })
-
-  // Clear form
-  $scope.reset = function() {
-    $scope.$broadcast('form-validation-reset');
-    $scope.user = { email:'',password:'',key:''};
-  }
 
   // Login button on form. Validate Form & login
   $scope.login = function(form) {
@@ -289,7 +310,7 @@ function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,
         .then(function success(data) {
           if(data.Token) {
             $cookieStore.put('token',data.Token);
-            $state.go('schools.list');
+            $rootScope.$broadcast('initialize',{token:data.Token});
           }
           // Server responded with error message
           else {
@@ -298,11 +319,9 @@ function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,
         })
         // Server didn't respond
         .catch(function error() {
-          $scope.message = 'Login failed, check your email and password';
+          $scope.message = 'Server might be down. Please try again shortly';
+          $cookieStore.remove('token');
         });
-
-        // Clear Form
-        $scope.reset();
   }
 
   // Create button on form. Validate Form & create account
@@ -329,7 +348,8 @@ function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,
       })
       // Server didn't respond
       .catch(function error() {
-        $scope.message = 'Account creation failed, the server might be down. Try refreshing the page.';
+        $scope.message = 'Account creation failed, the server might be down.';
+        $cookieStore.remove('token');
       });
   }
 
@@ -337,6 +357,6 @@ function LoginCtrl($scope, $state, $http, $stateParams,$cookieStore,AuthService,
   $scope.logout = function() {
     $cookieStore.remove('token');
     $scope.message = '';
-    $state.go('login')
+    $state.go('data.login')
   }
 }

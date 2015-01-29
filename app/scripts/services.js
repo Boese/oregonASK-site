@@ -1,8 +1,7 @@
 'use strict';
 
 angular.module('schoolApp.services',['base64'])
-  .factory('Service',['$resource','$state','$http','$cookieStore',Service])
-  .factory('ModelService',['$resource',ModelService])
+  .factory('Service',['$resource','$state','$http',Service])
   .service('popupService',['$window',popupService])
   .service('AuthService',['$resource','$base64','$http',AuthService])
   .factory('ContactService',['$resource',ContactService]);
@@ -18,12 +17,6 @@ function Service($resource,$state,$http) {
         }
     })
 };
-
-function ModelService($resource) {
-    return $resource('/models/:model.json', {model:'@_model'}, {
-      query: {method:'get'}
-    });
-}
 
 function popupService($window){
     this.showPopup=function(message){

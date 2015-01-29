@@ -1,7 +1,0 @@
-{
-  "model":{
-    "NAME":"text",
-    "AGR_NUMBER":"text",
-    "SPONSOR_TYPE":"text"
-  }
-}

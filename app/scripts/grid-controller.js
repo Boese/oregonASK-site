@@ -1,8 +1,8 @@
 angular.module('schoolApp.grid-controller', ['ngAnimate','ui.grid','ui.grid.edit','ui.grid.resizeColumns',
 'ui.grid.selection', 'ui.grid.exporter','ui.grid.importer','ui.grid.moveColumns','ui.select'])
-.controller('gridCtrl',['$scope','$state','$window','$stateParams','Service','ModelService','uiGridConstants', gridCtrl]);
+.controller('gridCtrl',['$scope','$state','$window','$stateParams','Service','uiGridConstants', gridCtrl]);
 
-function gridCtrl($scope,$state,$stateParams,$window,Service,ModelService,uiGridConstants) {
+function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
   $scope.$scope = $scope;
   $scope.rowsSelected = 0;
   $scope.rowsVisible = 0;
@@ -93,7 +93,7 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,ModelService,uiGrid
         loadJoins();
       })
       .catch(function error(error) {
-        console.log(error);
+        $state.go('data.login');
       })
   }
 
@@ -131,7 +131,7 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,ModelService,uiGrid
         }
       })
       .catch(function error(error) {
-        console.log(error);
+        $state.go('data.login');
       })
   }
 

@@ -4,6 +4,7 @@
     <h5 style="color:orange">{{entity.NAME}} {{entity.SITE_NAME}}</h5>
   </div>
   <div class="panel-body">
+    {{entity | json}}
     <form class="form-horizontal" role="form" ng-submit="save()">
         <div ng-include="'partials/_form.html'"></div>
     </form>

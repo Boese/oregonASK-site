@@ -25,19 +25,24 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a data-toggle="collapse" data-target=".navbar-collapse" ui-sref='login' class="navbar-brand">OregonASK Database</a>
+        <p class="navbar-text">OregonASK Database</p>
       </div>
+
       <div class="collapse navbar-collapse">
-        <ul ng-if="loginbutton === 'Logout'" class="nav navbar-nav">
-          <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset();" ui-sref="schools.list">Schools</a></li>
-          <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="sponsors.list">Sponsors</a></li>
-          <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="nutrition.list">Nutrition</a></li>
-          <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="summerfood.list">Summerfood</a></li>
-          <li><a data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="programs.list">Programs</a></li>
-        </ul>
+        <div ng-if="loginbutton === 'Logout'" class="nav navbar-nav btn-group" dropdown is-open="status.isopen">
+          <button type="button" class="btn btn-primary dropdown-toggle navbar-btn" dropdown-toggle ng-disabled="disabled">
+            Data Tables <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="dataTable in dataTables">
+              <a data-toggle="collapse" data-target=".navbar-collapse" ui-sref="data.list({model:dataTable.model})" ng-click="setTable(dataTable)">{{dataTable.model}}</a>
+            </li>
+          </ul>
+        </div>
+
         <ul class="nav navbar-nav pull-right">
-          <li ng-if="loginbutton === 'Logout'" style="padding-right:20px"><a style="color: white !important; background-color: #fc5c4f;" data-toggle="collapse" data-target=".navbar-collapse" ng-click="reset()" ui-sref="contacts.list">Contacts</a></li>
-          <li style="padding-right:20px"><button data-toggle="collapse" data-target=".navbar-collapse" ng-click="logout()" type="button" class="btn btn-default btn-sm navbar-btn pull-right">{{loginbutton}}</button></li>
+          <li ng-if="loginbutton === 'Logout'" style="padding-right:20px"><button class="btn btn-primary navbar-btn" data-toggle="collapse" data-target=".navbar-collapse" ui-sref="data.contacts">Contacts</button></li>
+          <li style="padding-right:20px"><button data-toggle="collapse" data-target=".navbar-collapse" ng-click="logout()" type="button" class="btn btn-default navbar-btn pull-right">{{loginbutton}}</button></li>
         </ul>
       </div>
     </nav>
@@ -64,7 +69,7 @@
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" src="scripts/grid-controller.js"></script>
-    <script type="text/javascript" src="scripts/new-contacts-controller.js"></script>
+    <script type="text/javascript" src="scripts/contacts-controller.js"></script>
     <script type="text/javascript" src="scripts/services.js"></script>
     <script type="text/javascript" src="scripts/directives.js"></script>
     <!-- endbuild -->
