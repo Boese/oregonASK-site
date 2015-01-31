@@ -1,8 +1,11 @@
 
 <div class="panel panel-primary">
   <div class="panel-heading text-center">
-    <h2><b>{{model}} : {{modelOnly.NAME}} {{modelOnly.SITE_NAME}}</b></h2>
-    <a class="btn btn-danger" ui-sref="data.edit({model:model,id:modelOnly.id})">Edit</a>
+    <h3>
+      <b>{{modelOnly.NAME}} {{modelOnly.SITE_NAME}}</b>
+      <a class="btn btn-default pull-right" ui-sref="data.edit({model:model,id:modelOnly.id})">Edit</a>
+      <div class="btn btn-danger btn-sm pull-left" type="button" class="close" aria-label="Close" ui-sref="data.list({model:model})"><span aria-hidden="true">&times;</span></div>
+    </h3>
   </div>
 
   <div class="panel-body">

@@ -10,7 +10,7 @@ angular.module('schoolApp').config(function($stateProvider,$urlRouterProvider) {
     abstract: true,
     url: '/',
     templateUrl: 'index.html',
-    controller: 'DataCtrl',
+    controller: 'DataCtrl'
   }).state('data.list', {
     url: ':model/list',
     templateUrl: 'partials/models.html',
@@ -43,7 +43,7 @@ angular.module('schoolApp').config(function($stateProvider,$urlRouterProvider) {
     controller: 'ContactsCtrl',
     templateUrl: 'partials/contacts.html'
   }).state('data.contacts.contact', {
-    url: '/contact',
+    url: 'contact',
     controller: 'ContactViewCtrl',
     templateUrl: 'partials/contacts-view.html',
     params:{contact:null,lists:null,campaigns:null}

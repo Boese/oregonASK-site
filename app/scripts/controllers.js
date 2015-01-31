@@ -41,8 +41,6 @@ function DataCtrl($scope, $state, $http, $cookieStore,Service) {
 // List of models
 function ListCtrl($scope, $state,$stateParams, popupService, $window, $filter, ngTableParams, Service) {
 
-    $scope.model = $stateParams.model;
-
     $scope.getColumn = function(table,name) {
       return table[name];
     };
@@ -89,7 +87,7 @@ function ListCtrl($scope, $state,$stateParams, popupService, $window, $filter, n
     if(popupService.showPopup('Really delete this?')) {
         mod.$delete({table:$scope.model, id: id}).$promise
           .then(function success(data) {
-            $state.go('data.list');
+            $state.go('data.list',{model:$scope.model});
           })
           .catch(function error(err) {
             $state.go('data.login')
@@ -138,36 +136,97 @@ function ViewCtrl($scope,$state,$stateParams, Service) {
 
 // Edit a model
 function EditCtrl($scope, $state, $stateParams, Service) {
-  $scope.modelOnly = {};
-  $scope.modelArray = {};
-  $scope.modelJSON = {};
+  $scope.options = {};
   $scope.entity = {};
-  $scope.error = '';
+  $scope.modelOnly = {};
+  $scope.modelParent = {};
+  $scope.modelArray = {};
 
   $scope.save = function() { //create a new model. Issues a PUT to /api/*
     // Make sure required fields are entered
     if($scope.entity[$scope.first] === undefined ||
       $scope.entity[$scope.second] === undefined ||
       $scope.entity[$scope.third] === undefined) {
-      $scope.error = 'Must enter all the red fields above'
-      return;
-    }
+        $scope.error = 'Must enter all the red fields above'
+        return;
+      }
     if($scope.entity[$scope.first].length < 1 ||
       $scope.entity[$scope.second].length < 1 ||
       $scope.entity[$scope.third].length < 1) {
         $scope.error = 'Must enter all the red fields above'
         return;
       }
-    // If valid, save model to database
-    Service.save({table:$scope.model}, $scope.entity, function() {
-      $state.go('data.list');
-    })
-  };
-
-  $scope.expand = function(table) {
-    Service.get({table:table,id:'new'}).$promise
+      // If valid, save model to database
+    Service.save({table:$scope.model}, $scope.entity).$promise
       .then(function success(data) {
-        $scope.modelJSON[table] = data.toJSON();
+        $state.go('data.view',{model:$scope.model,id:$stateParams.id});
+      })
+      .catch(function error(err) {
+        $state.go('data.login');
+      })
+  }
+
+  function loadParent(table) {
+    Service.get({table:table, id:'new'}).$promise
+    .then(function success(data) {
+      $scope.options[table] = data;
+    })
+    .catch(function error(err) {
+      $state.go('data.login')
+    })
+  }
+
+  function loadModel() {
+    Service.get({table:$scope.model,id:$stateParams.id}).$promise
+      .then(function success(data) {
+        data = data.toJSON();
+        for(var key in data) {
+          if(data[key] instanceof Array) {
+            $scope.modelArray[key] = [];
+            $scope.entity[key] = [];
+            for(var key2 in data[key]) {
+              var info = {};
+              for(var key3 in data[key][key2]) {
+                info[key3] = data[key][key2][key3];
+              }
+              $scope.modelArray[key].push(joins[key][0]);
+              $scope.entity[key].push(info);
+            }
+          }
+          else if(data[key] instanceof Object) {
+            $scope.entity[key].id = data[key].id;
+          }
+          else {
+            $scope.entity[key] = data[key];
+          }
+        }
+      })
+      .catch(function error(err) {
+        $state.go('data.login')
+      })
+  }
+
+  var joins = {};
+  function loadNewModel() {
+    Service.get({table:$scope.model,id:'new'}).$promise
+      .then(function success(data) {
+        data = data.toJSON();
+        for(var key in data) {
+          if(data[key] instanceof Array) {
+            joins[key] = [];
+            $scope.entity[key] = [];
+            $scope.modelArray[key] = [];
+            joins[key].push(data[key][0]);
+          }
+          else if(data[key] instanceof Object) {
+            loadParent(key);
+            $scope.modelParent[key] = data[key]
+          }
+          else
+            $scope.modelOnly[key] = data[key]
+        }
+        if($stateParams.id)
+          loadModel();
       })
       .catch(function error(err) {
         $state.go('data.login')
@@ -176,7 +235,7 @@ function EditCtrl($scope, $state, $stateParams, Service) {
 
   $scope.add = function(table) {
     $scope.entity[table].push({});
-    $scope.modelArray[table].push($scope.modelJSON[table]);
+    $scope.modelArray[table].push(joins[table][0]);
   }
 
   $scope.remove = function(table,index) {
@@ -184,92 +243,7 @@ function EditCtrl($scope, $state, $stateParams, Service) {
     $scope.modelArray[table].splice(index,index+1);
   }
 
-  $scope.option = {};
-  $scope.options = {};
-  $scope.tables = [];
-
-  $scope.loadTables = function() {
-    var table = $scope.tables[$scope.tables.length-1];
-
-    if(table === undefined) {
-      if($stateParams.id !== undefined)
-        $scope.loadModelService();
-      return;
-    }
-      Service.query({table:table}).$promise
-      .then(function success(data){
-        $scope.options[table] = data;
-        $scope.tables.pop();
-        $scope.loadTables();
-      })
-      .catch(function error(err) {
-        $state.go('data.login');
-      })
-    }
-
-  $scope.loadModelService = function() {
-    Service.get({table:$scope.model, id: $stateParams.id }).$promise
-    .then(function(data) {
-      data = data.toJSON();
-      // Assign modelOnly data to modelOnly & array data to modelArray
-      for(var key in data) {
-        if(data[key] instanceof Array) {
-          $scope.modelArray[key] = [];
-          $scope.entity[key] = [];
-          for(var key2 in data[key]) {
-            var info = {};
-            for(var key3 in data[key][key2]) {
-              info[key3] = data[key][key2][key3];
-            }
-            $scope.modelArray[key].push($scope.modelJSON[key]);
-            $scope.entity[key].push(info);
-          }
-        }
-        else if(data[key] instanceof Object) {
-          var temp ={};
-          temp['id'] = data[key]['id'];
-          $scope.entity[key] = temp;
-        }
-        else {
-          $scope.entity[key] = data[key];
-        }
-      }
-    })
-    .catch(function error(err) {
-      $state.go('data.login');
-    })
-  }
-
-  $scope.loadNewModel = function() {
-    Service.get({table:$scope.model, id:'new'}).$promise
-      .then(function success(data) {
-        data = data.toJSON();
-        for(var key in data) {
-          if(data[key] instanceof Array) {
-            if(key[key.length-1].toLowerCase() === 's') {
-              key = key.slice(0, - 1);
-            }
-            key = key.replace('_','');
-            $scope.expand(key);
-            $scope.entity[key] = [];
-            $scope.modelArray[key] = [];
-          }
-          else if(data[key] instanceof Object) {
-            $scope.modelOnly[key] = data[key];
-            $scope.tables.push(key);
-          }
-          else {
-            $scope.modelOnly[key] = data[key];
-          }
-        }
-        $scope.loadTables();
-      })
-      .catch(function error(err) {
-        $state.go('data.login');
-      })
-  }
-
-  $scope.loadNewModel();
+  loadNewModel();
 }
 
 function LoginCtrl($scope, $rootScope, $state, $stateParams,$cookieStore,AuthService) {
@@ -319,7 +293,7 @@ function LoginCtrl($scope, $rootScope, $state, $stateParams,$cookieStore,AuthSer
         })
         // Server didn't respond
         .catch(function error() {
-          $scope.message = 'Server might be down. Please try again shortly';
+          $scope.message = 'Server might be down. Please try again shortly or refresh the page';
           $cookieStore.remove('token');
         });
   }
@@ -348,7 +322,7 @@ function LoginCtrl($scope, $rootScope, $state, $stateParams,$cookieStore,AuthSer
       })
       // Server didn't respond
       .catch(function error() {
-        $scope.message = 'Account creation failed, the server might be down.';
+        $scope.message = 'Server might be down. Please try again shortly or refresh the page';
         $cookieStore.remove('token');
       });
   }

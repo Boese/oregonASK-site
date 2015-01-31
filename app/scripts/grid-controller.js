@@ -1,5 +1,5 @@
 angular.module('schoolApp.grid-controller', ['ngAnimate','ui.grid','ui.grid.edit','ui.grid.resizeColumns',
-'ui.grid.selection', 'ui.grid.exporter','ui.grid.importer','ui.grid.moveColumns','ui.select'])
+'ui.grid.selection', 'ui.grid.exporter','ui.grid.importer','ui.grid.moveColumns','ui.select','angular-underscore'])
 .controller('gridCtrl',['$scope','$state','$window','$stateParams','Service','uiGridConstants', gridCtrl]);
 
 function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
@@ -69,79 +69,72 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
       return false;
     }
 
-  // Load Entities without Joins
-  var entities = {}
-  var tempCols = [];
-  function loadData() {
-    Service.query({table:$scope.model}).$promise
+  // Load new Model
+  $scope.oneToMany = {};
+  $scope.manyToOne = {};
+  $scope.entities = [];
+  function loadTable() {
+    Service.get({table:$scope.model,id:'new'}).$promise
       .then(function success(data) {
-        entities = data;
-        for(var key in entities) {
-          try {
-            for(var key2 in entities[key].toJSON()) {
-              if(!entities[key][key2])
-                delete entities[key][key2]
-              else if(!checkColumn(key2)) {
-                tempCols.push({
-                  'field':key2,
-                  'width':200
-                });
-              }
-            }
-          } catch(error) {}
+        data = data.toJSON();
+        for(var key in data) {
+          if(data[key] instanceof Array) {
+            $scope.oneToMany[key] = [];
+            $scope.oneToMany[key].push(data[key][0]);
+          }
+          else if(data[key] instanceof Object) {
+            $scope.manyToOne[key] = {}
+          }
         }
-        loadJoins();
+        loadOneToMany();
+        loadManyToOne();
+        loadModels();
       })
-      .catch(function error(error) {
-        $state.go('data.login');
+      .catch(function error(err) {
+        $state.go('data.login')
       })
   }
 
-  // Load Joins
-  var joins = {}
-  $scope.columns = [];
-  function loadJoins() {
-    Service.query({table:$scope.model + 'Info'}).$promise
-      .then(function success(data) {
-        joins = data;
-        for(var key in joins) {
-          var id = joins[key][($scope.model + '_ID').toUpperCase()];
-          var entityID = findEntity(id)
-          try {
-            for(var key2 in joins[key].toJSON()) {
-              entities[entityID][key2 + ":" + joins[key].YEAR] = joins[key][key2];
-              if(!checkColumn(key2 + ":" + joins[key].YEAR)) {
-                tempCols.push({
-                  'field': key2 + ":" + joins[key].YEAR,
-                  'width':200
-                });
-              }
-            }
-          } catch(error) {}
-        }
-
-        // Load Grid
-        $scope.gridOptions.data = entities;
-
-        // button toggle for columns
-        $scope.gridOptions.columnDefs = tempCols;
-        $scope.columns = $scope.gridApi.grid.columns;
-        for(var key in $scope.columns) {
-          $scope.columns[key]['active'] = true;
-        }
-      })
-      .catch(function error(error) {
-        $state.go('data.login');
-      })
+  function loadData(oneToMany,table) {
+    Service.query({table:table.replace('_','')}).$promise
+    .then(function success(data) {
+      if(oneToMany)
+        $scope.oneToMany[table] = data;
+      else
+        $scope.manyToOne[table] = data;
+    })
+    .catch(function error(err) {
+      $state.go('data.login');
+    })
   }
 
-  // Return entity location in list
-  function findEntity(id) {
-    for(var i = 0; i < entities.length; i++) {
-      if(entities[i].id === id)
-        return i;
+  function loadOneToMany() {
+    for(var key in $scope.oneToMany) {
+      loadData(true,key);
     }
   }
 
-  loadData();
+  function loadManyToOne() {
+    for(var key in $scope.manyToOne) {
+      loadData(false,key)
+    }
+  }
+
+  function loadModels() {
+    Service.query({table:$scope.model}).$promise
+      .then(function success(data) {
+        $scope.entities = data;
+        joinTables();
+      })
+      .catch(function error(err) {
+        $state.go('data.login');
+      })
+  }
+
+  function joinTables() {
+    $scope.sample([1, 2, 3]);
+    console.log(_.indexOf([1,2,3], 2))
+  }
+
+  loadTable();
 }
