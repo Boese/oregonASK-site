@@ -1,10 +1,9 @@
 <div class="panel panel-primary">
   <div class="panel-heading text-center">
-    <h3>Add a new {{model}} <div class="btn btn-danger btn-sm pull-left" type="button" class="close" aria-label="Close" ui-sref="data.list({model:model})"><span aria-hidden="true">&times;</span></div></h3>
+    <h3 style="color:blue">Add a new {{model}} <div class="btn btn-danger btn-sm pull-left" type="button" class="close" aria-label="Close" ui-sref="data.list({model:model})"><span aria-hidden="true">&times;</span></div></h3>
     <h5 style="color:orange">{{entity.NAME}} {{entity.SITE_NAME}}</h5>
   </div>
   <div class="panel-body">
-    {{entity | json}}
     <form class="form-horizontal" role="form" ng-submit="save()">
         <div ng-include="'partials/_form.html'"></div>
     </form>

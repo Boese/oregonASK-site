@@ -1,10 +1,15 @@
+<!--Properties-->
 <div class="form-group" ng-repeat="key in notSorted(modelOnly)" ng-init="value = modelOnly[key]">
   <label for="{{key}}" class="col-sm-4 control-label ng-class:{'text-danger': (key === first || key === second || key === third)}">{{key}}</label>
-  <div ng-if="value.id === undefined" class="col-sm-8">
-    <textarea ng-if="value === 'textarea'" type="{{value}}" ng-model="entity[key]" class="form-control" rows="6" id="{{key}}" placeholder="{{key}}?"></textarea>
-    <input ng-if="value !== 'textarea'" type="{{value}}" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
+  <div class="col-sm-8">
+    <input type="text" ng-model="entity[key]" class="form-control" id="{{key}}" placeholder="{{key}}?"/>
   </div>
-  <div ng-if="value.id !== undefined" class="col-sm-8">
+</div>
+
+<!--Many to One-->
+<div class="form-group" ng-repeat="(key,value) in modelParent">
+  <label for="{{key}}" class="col-sm-4 control-label ng-class:{'text-danger': (key === first || key === second || key === third)}">{{key}}</label>
+  <div class="col-sm-8">
     <p style="color:green">Search for {{key}}
       <ui-select ng-model="entity[key].id" theme="selectize" ng-disabled="disabled">
         <ui-select-match placeholder="Select or search a {{key}} in the list...">{{$select.selected.NAME}} <small>{{$select.selected.COUNTY}}</small><small>{{$select.selected.SPONSOR_TYPE}}</small></ui-select-match>
@@ -16,27 +21,25 @@
           </small>
         </ui-select-choices>
       </ui-select>
-    <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); entity[key] = null">Clear</button>
-  </div>
+      <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); entity[key] = null">Clear</button>
+    </div>
 </div>
 
-<hr>
-
+<!--One to Many-->
 <div class="form-group" ng-repeat="(key,value) in modelArray">
   <div ng-repeat="key2 in notSorted(value)" ng-init="value2 = value[key2]">
     <h2 class="text-center">{{ key }} : {{entity[key][key2]['YEAR']}}</h2>
     <div class="form-group" ng-repeat="key3 in notSorted(value2)" ng-init="value3 = value2[key3]">
       <label for="{{key3}}" class="col-sm-4 control-label">{{key3}}</label>
       <div class="col-sm-8">
-        <textarea ng-if="value3 === 'textarea'" type="{{value3}}" ng-model="entity[key][key2][key3]" class="form-control" rows="6" id="{{key3}}" placeholder="{{key3}}?"></textarea>
-        <input ng-if="value3 !== 'textarea'" type="{{value3}}" ng-model="entity[key][key2][key3]" class="form-control" id="{{key3}}" placeholder="{{key3}}?"/>
+        <input type="text" ng-model="entity[key][key2][key3]" class="form-control" id="{{key3}}" placeholder="{{key3}}?"/>
       </div>
     </div>
     <button ng-click="$event.preventDefault(); remove(key,key2)" class="btn btn-danger center-block">Remove ↑ {{key}}</button>
   </div>
   <hr>
-    <button ng-if="$last" ng-click="$event.preventDefault(); add(key)" class="btn btn-warning center-block">Add {{key}}</button>
+    <button ng-click="$event.preventDefault(); add(key)" class="btn btn-info center-block">Add {{key}}</button>
 </div>
 
 <p class="text-danger">{{error}}</p>
-<input type="submit" class="btn btn-lg btn-success"/>
+<input type="submit" class="btn btn-success"/>
