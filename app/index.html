@@ -1,18 +1,27 @@
 <!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
 <html data-ng-app="schoolApp">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title></title>
-    <meta name="description" content="">
+    <title>OregonASK Database</title>
+    <meta name="description" content="oregonASK Database site">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- build:css css/oregonAsk.min.css -->
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="bower_components/ng-table/ng-table.min.css">
     <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.min.css">
     <link rel="stylesheet" href="bower_components/selectize/dist/css/selectize.css">
-    <link rel="styleSheet" href="bower_components/angular-ui-grid/ui-grid.min.css"/>
-    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="bower_components/angular-ui-grid/ui-grid.min.css"/>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- build:css(app) /styles/oregonAsk.css -->
+    <link rel="stylesheet" href="/styles/main.css">
     <!-- endbuild -->
   </head>
 
@@ -49,7 +58,14 @@
     <div class="container-fluid" style="padding:40px 30px 75px 30px">
         <div ui-view></div>
     </div>
-    <!-- build:js js/oregonAsk.min.js -->
+
+    <!--[if lt IE 9]>
+    <script src="bower_components/es5-shim/es5-shim.js"></script>
+    <script src="bower_components/json3/lib/json3.min.js"></script>
+    <![endif]-->
+
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
     <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
     <script type="text/javascript" src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
     <script type="text/javascript" src="bower_components/modernizr/modernizr.js"></script>
@@ -68,7 +84,10 @@
     <script type="text/javascript" src="bower_components/underscore/underscore.js"></script>
     <script type="text/javascript" src="bower_components/angular-underscore/angular-underscore.min.js"></script>
     <script type="text/javascript" src="bower_components/papaparse/papaparse.min.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
 
+    <!-- build:js({.tmp,app}) scripts/oregonAsk.js -->
     <script type="text/javascript" src="scripts/app.js"></script>
     <script type="text/javascript" src="scripts/controllers.js"></script>
     <script type="text/javascript" src="scripts/grid-controller.js"></script>
