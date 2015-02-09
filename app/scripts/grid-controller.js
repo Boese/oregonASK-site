@@ -102,6 +102,7 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
           addColumn(key);
       }
       $scope.gridOptions.columnDefs = angular.copy($scope.cols);
+      activeGrid = true;
       })
       .catch(function error(err) {
         $state.go('data.login')
@@ -182,7 +183,6 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
   function loadOneToMany() {
     if(oneToMany.length < 1) {
       $scope.gridOptions.data = $scope.entities;
-      activeGrid = true;
     }
     else {
       var table = oneToMany[0];
@@ -207,9 +207,7 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
   loadModels();
 
   $scope.refreshData = function() {
-    activeGrid = false;
     $scope.gridApi.selection.clearSelectedRows();
     loadColumns();
-    activeGrid = true;
   }
 }
