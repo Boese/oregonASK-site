@@ -165,7 +165,7 @@ function EditCtrl($scope, $state, $stateParams, Service) {
   }
 
   function loadParent(table) {
-    Service.get({table:table, id:'new'}).$promise
+    Service.query({table:table}).$promise
     .then(function success(data) {
       $scope.options[table] = data;
     })

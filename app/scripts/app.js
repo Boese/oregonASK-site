@@ -48,7 +48,4 @@ angular.module('schoolApp').config(function($stateProvider,$urlRouterProvider) {
     templateUrl: 'views/contacts-view.html',
     params:{contact:null,lists:null,campaigns:null}
   });
-
-}).run(function($state){
-  $state.go('data.login');
-});
+})
