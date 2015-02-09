@@ -5,6 +5,11 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
   $scope.rowsSelected = 0;
   $scope.rowsVisible = 0;
 
+  var activeGrid = false;
+  $scope.gridActive = function() {
+    return activeGrid;
+  }
+
   // TABLE OPTIONS
   $scope.gridOptions = {
     enableGridMenu: false,
@@ -177,6 +182,7 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
   function loadOneToMany() {
     if(oneToMany.length < 1) {
       $scope.gridOptions.data = $scope.entities;
+      activeGrid = true;
     }
     else {
       var table = oneToMany[0];
@@ -201,7 +207,9 @@ function gridCtrl($scope,$state,$stateParams,$window,Service,uiGridConstants) {
   loadModels();
 
   $scope.refreshData = function() {
+    activeGrid = false;
     $scope.gridApi.selection.clearSelectedRows();
     loadColumns();
+    activeGrid = true;
   }
 }

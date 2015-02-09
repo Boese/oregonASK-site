@@ -191,8 +191,9 @@ function EditCtrl($scope, $state, $stateParams, Service) {
               $scope.entity[key].push(info);
             }
           }
-          else if(data[key] instanceof Object) {
-            $scope.entity[key].id = data[key].id;
+          else if(key.indexOf('_ID') !== -1) {
+            $scope.entity[key.replace('_ID','')] = {id:''};
+            $scope.entity[key.replace('_ID','')].id = data[key];
           }
           else {
             $scope.entity[key] = data[key];
