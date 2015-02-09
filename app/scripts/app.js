@@ -13,39 +13,39 @@ angular.module('schoolApp').config(function($stateProvider,$urlRouterProvider) {
     controller: 'DataCtrl'
   }).state('data.list', {
     url: ':model/list',
-    templateUrl: 'partials/models.html',
+    templateUrl: 'views/models.html',
     controller: 'ListCtrl'
   }).state('data.view', { //state for showing single model
     url: ':model/:id/view',
-    templateUrl: 'partials/model-view.html',
+    templateUrl: 'views/model-view.html',
     controller: 'ViewCtrl'
   }).state('data.new', { //state for adding a new model
     url: ':model/new',
-    templateUrl: 'partials/model-add.html',
+    templateUrl: 'views/model-add.html',
     controller: 'EditCtrl'
   }).state('data.edit', { //state for updating a model
     url: ':model/:id/edit',
-    templateUrl: 'partials/model-edit.html',
+    templateUrl: 'views/model-edit.html',
     controller: 'EditCtrl'
   }).state('data.grid', { //state for updating a model
     url: ':model/grid',
-    templateUrl: 'partials/grid.html',
+    templateUrl: 'views/grid.html',
     controller: 'gridCtrl'
   }).state('data.login', {
     url: 'login',
-    templateUrl: 'partials/login.html'
+    templateUrl: 'views/login.html'
   }).state('data.create-account', {
     url: 'create-account',
-    templateUrl: 'partials/create-account.html'
+    templateUrl: 'views/create-account.html'
   //Contacts from Constant Contacts
   }).state('data.contacts', {
     url:'contacts',
     controller: 'ContactsCtrl',
-    templateUrl: 'partials/contacts.html'
+    templateUrl: 'views/contacts.html'
   }).state('data.contacts.contact', {
     url: 'contact',
     controller: 'ContactViewCtrl',
-    templateUrl: 'partials/contacts-view.html',
+    templateUrl: 'views/contacts-view.html',
     params:{contact:null,lists:null,campaigns:null}
   });
 
