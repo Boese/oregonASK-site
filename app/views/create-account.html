@@ -1,14 +1,4 @@
-<style>
-.form-group .help-block {
-  display: none;
-}
-
-.form-group.has-error .help-block {
-  display: block;
-}
-</style>
-
-<div class="well primary">
+<div class="well info">
   <h2 class="text-center">Create Account</h2>
 
   <form class="form-horizontal" name="createForm" role="form" ng-submit="create(createForm)" novalidate>
@@ -42,9 +32,13 @@
 
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">Create Account</button>
-        <a href="" ng-click="reset()">Reset</a>
+        <button type="submit" class="btn btn-success"><span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Create Account</button>
+        <a href="" ng-click="clearTokens()">Reset</a>
       </div>
+    </div>
+
+    <div class="row text-center">
+      <button ui-sref='data.login' class="btn btn-default">Login</button>
     </div>
 
   </form>

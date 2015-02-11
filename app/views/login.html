@@ -1,14 +1,4 @@
-<style>
-.form-group .help-block {
-  display: none;
-}
-
-.form-group.has-error .help-block {
-  display: block;
-}
-</style>
-
-<div class="well primary">
+<div class="well">
   <h2 style="color:blue" class="text-center">{{loginTitle}}</h2>
 
 <div class="row" ng-if="loginbutton === 'Login'">
@@ -35,14 +25,14 @@
 
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-8">
-        <button type="submit" class="btn btn-success">Login</button>
-        <a href="" ng-click="reset()">Reset</a>
+        <button type="submit" class="btn btn-success"><span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Login</button>
+        <a href="" ng-click="clearTokens()">Reset</a>
       </div>
     </div>
   </form>
 </div>
 
   <div class="row text-center">
-    <button ui-sref='create-account' class="btn btn-default">Create Account</button>
+    <button ui-sref='data.create-account' class="btn btn-default">Create Account</button>
   </div>
 </div>

@@ -4,4 +4,19 @@
 
 .form-group.has-error .help-block {
   display: block;
-}</style><div class="well primary"><h2 style="color:blue" class="text-center">{{loginTitle}}</h2><div class="row" ng-if="loginbutton === 'Login'"><form class="form-horizontal" name="loginForm" role="form" ng-submit="login(loginForm)" novalidate><h4 style="color:red" class="text-center">{{message}}</h4><div class="form-group" form-validation=""><label for="email" class="col-sm-2 control-label">Email</label><div class="col-sm-8"><input type="email" name="email" ng-model="user.email" class="form-control" placeholder="Email" required><p class="help-block" ng-if="loginForm.email.$error.required">email address is required</p><p class="help-block" ng-if="loginForm.email.$error.email">email address is invalid</p></div></div><div class="form-group" form-validation=""><label for="password" class="col-sm-2 control-label">Password</label><div class="col-sm-8"><input type="password" name="password" ng-minlength="8" ng-model="user.password" class="form-control" placeholder="Password" required><p class="help-block" ng-if="loginForm.password.$error.required">password is required</p><p class="help-block" ng-if="loginForm.password.$error.minlength">password must be at least 8 characters</p></div></div><div class="form-group"><div class="col-sm-offset-2 col-sm-8"><button type="submit" class="btn btn-success">Login</button> <a href="" ng-click="reset()">Reset</a></div></div></form></div><div class="row text-center"><button ui-sref="create-account" class="btn btn-default">Create Account</button></div></div>
+}
+
+.glyphicon-refresh-animate {
+    -animation: spin .7s infinite linear;
+    -webkit-animation: spin2 .7s infinite linear;
+}
+
+@-webkit-keyframes spin2 {
+    from { -webkit-transform: rotate(0deg);}
+    to { -webkit-transform: rotate(360deg);}
+}
+
+@keyframes spin {
+    from { transform: scale(1) rotate(0deg);}
+    to { transform: scale(1) rotate(360deg);}
+}</style><div class="well primary"><h2 style="color:blue" class="text-center">{{loginTitle}}</h2><div class="container"><button class="btn btn-lg btn-warning"><span class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...</button></div><div class="row" ng-if="loginbutton === 'Login'"><form class="form-horizontal" name="loginForm" role="form" ng-submit="login(loginForm)" novalidate><h4 style="color:red" class="text-center">{{message}}</h4><div class="form-group" form-validation=""><label for="email" class="col-sm-2 control-label">Email</label><div class="col-sm-8"><input type="email" name="email" ng-model="user.email" class="form-control" placeholder="Email" required><p class="help-block" ng-if="loginForm.email.$error.required">email address is required</p><p class="help-block" ng-if="loginForm.email.$error.email">email address is invalid</p></div></div><div class="form-group" form-validation=""><label for="password" class="col-sm-2 control-label">Password</label><div class="col-sm-8"><input type="password" name="password" ng-minlength="8" ng-model="user.password" class="form-control" placeholder="Password" required><p class="help-block" ng-if="loginForm.password.$error.required">password is required</p><p class="help-block" ng-if="loginForm.password.$error.minlength">password must be at least 8 characters</p></div></div><div class="form-group"><div class="col-sm-offset-2 col-sm-8"><button type="submit" class="btn btn-success">Login</button> <a href="" ng-click="reset()">Reset</a></div></div></form></div><div class="row text-center"><button ui-sref="create-account" class="btn btn-default">Create Account</button></div></div>

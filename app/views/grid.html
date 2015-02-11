@@ -1,5 +1,5 @@
 <h3 class="text-center">
-  <b style="color:blue">{{model}}s Data</b>
+  <b style="color:blue">{{model}}s <span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Data</b>
   <div class="btn btn-danger btn-sm pull-left" type="button" class="close" aria-label="Close" ui-sref="data.list({model:model})"><span aria-hidden="true">&times;</span></div>
   <div class="btn btn-info btn-sm pull-right" ng-click="getCsvExport()">Export {{rowsSelected}} Selected Rows & all related Data to Excel</div>
 </h3>
