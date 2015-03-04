@@ -1,65 +1,20 @@
 <h3 class="text-center">
-  <b style="color:blue">{{model}}s <span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Data</b>
-  <div class="btn btn-danger btn-sm pull-left" type="button" class="close" aria-label="Close" ui-sref="data.list({model:model})"><span aria-hidden="true">&times;</span></div>
-  <div class="btn btn-info btn-sm pull-right" ng-click="getCsvExport()">Export {{rowsSelected}} Selected Rows & all related Data to Excel</div>
+  <b style="color:blue">Search for {{model}}s <span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Data</b>
 </h3>
 
-<hr>
+{{searchModel}}
 
-<div class="row">
-  <div class="col-md-6">
-    <form class="form-horizontal" role="form">
-      <h4 style="color:green">Export</h4>
-      <div class="form-group">
-        <label class="col-sm-4 control-label">Which columns should we export?</label>
-        <div class="col-sm-8">
-          <select class="form-control" ng-model="export_column_type"</select>
-            <option value='all'>All</option>
-            <option value='visible'>Visible</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-sm-4 control-label">Which rows should we export?</label>
-        <div class="col-sm-8">
-          <select class="form-control" ng-model="export_row_type"</select>
-            <option value='all'>All</option>
-            <option value='visible'>Visible</option>
-            <option value='selected'>Selected</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="col-sm-4 control-label">What format would you like?</label>
-        <div class="col-sm-8">
-          <select class="form-control" ng-model="export_format"</select>
-            <option value='csv'>Excel</option>
-            <option value='pdf'>PDF</option>
-          </select>
-        </div>
-      </div>
-      <div class="custom-csv-link-location">
-        <label style="color:blue">Your Excel download link:</label>
-        <span class="ui-grid-exporter-csv-link">&nbsp</span>
-      </div>
-      <div class="form-group">
-        <label class="col-sm-4 control-label"><div class="btn btn-info" ng-click="export()">Export</div></label>
-      </div>
-    </form>
-  </div>
+<div class="btn btn-primary" ng-click="search()">Export</div>
 
-  <div class="col-md-6">
-    <br><br>
-    <div class="text-center">
-      <ul style="list-style: none">
-        <li style="color:#fc5c4f"><strong>Number of all rows: </strong> {{ gridOptions.data.length | number }}</li>
-        <li style="color:blue"><strong>Number of rows visible: </strong> {{ rowsVisible | number }}</li>
-        <li style="color:green"><strong>Number of rows selected: </strong> {{ rowsSelected | number }}</li>
-        <li><br></li>
-        <li><div class="btn btn-warning" ng-click="refreshData()">Reset Grid</div></li>
-      </ul>
-    </div>
-  </div>
-</div>
-
-  <div ng-show="gridActive()" id="grid1" ui-grid="gridOptions" class="grid" ui-grid-resize-columns ui-grid-selection ui-grid-exporter ui-grid-importer></div>
+<h4>Select what you want to export</h4>
+<ul ng-repeat="(key,value) in entity track by $index">
+  <li><input type="checkbox" ng-click="addCol(0,key)"> {{key}}
+    <ul ng-repeat="(key2,value2) in value track by $index">
+    </li><input type="checkbox" ng-click="addCol(1,key)"> {{key2}}
+        <ul ng-repeat="(key3,value3) in value2 track by $index">
+        </li><input type="checkbox" ng-click="addCol(2,key)"> {{key3}}</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>

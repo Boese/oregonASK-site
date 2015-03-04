@@ -7,26 +7,27 @@
 <hr>
 
 <div class="row">
-    <div class="row">
-      <div class="col-md-5">
-        <div class="input-group">
-          <span class="input-group-addon">Search by</span>
-          <input type="text" ng-model="tableParams.filter()[first]" class="form-control" placeholder="{{model}} {{first}}">
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="input-group">
-          <span class="input-group-addon">Search by</span>
-          <input type="text" ng-model="tableParams.filter()[second]" class="form-control" placeholder="{{model}} {{second}}">
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="input-group">
-          <span class="input-group-addon">Search by</span>
-          <input type="text" ng-model="tableParams.filter()[third]" class="form-control" placeholder="{{model}} {{third}}">
-        </div>
-      </div>
+  <div class="col-md-4">
+    <div class="input-group">
+      <span class="input-group-addon">Search by</span>
+      <select class="form-control" ng-change="tableParams.reload()" ng-model="first" ng-options="property for property in properties"></select>
     </div>
+      <input type="text" ng-model="tableParams.filter()[first]" class="form-control" placeholder="{{model}} {{first}}">
+  </div>
+  <div class="col-md-4">
+    <div class="input-group">
+      <span class="input-group-addon">Search by</span>
+      <select class="form-control" ng-change="tableParams.reload()" ng-model="second" ng-options="property for property in properties"></select>
+    </div>
+      <input type="text" ng-model="tableParams.filter()[second]" class="form-control" placeholder="{{model}} {{second}}">
+  </div>
+  <div class="col-md-4">
+    <div class="input-group">
+      <span class="input-group-addon">Search by</span>
+      <select class="form-control" ng-change="tableParams.reload()" ng-model="third" ng-options="property for property in properties"></select>
+    </div>
+      <input type="text" ng-model="tableParams.filter()[third]" class="form-control" placeholder="{{model}} {{third}}">
+  </div>
 </div>
 
 <div class="table-responsive">
@@ -38,7 +39,7 @@
       <td><b>View</b></td>
       <td><b>Delete</b></td>
     </tr>
-    <tr ng-repeat="mod in $data">
+    <tr ng-repeat="mod in $data | orderBy:[first,second,third]">
       <td>{{getColumn(mod,first)}}</td>
       <td>{{getColumn(mod,second)}}</td>
       <td>{{getColumn(mod,third)}}</td>

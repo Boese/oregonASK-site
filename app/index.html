@@ -40,7 +40,7 @@
           </button>
           <ul class="dropdown-menu" role="menu">
             <li ng-repeat="dataTable in dataTables">
-              <a ng-click="collapse();setTable(dataTable)" ui-sref="data.list({model:dataTable.model})" >{{dataTable.model}}</a>
+              <a ng-click="collapse()" ui-sref="data.list({model:dataTable})" >{{dataTable}}</a>
             </li>
           </ul>
         </div>

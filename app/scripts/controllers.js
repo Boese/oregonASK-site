@@ -3,7 +3,7 @@
 
   // Controllers : DataCtrl, ListCtrl, ViewCtrl, EditCtrl
 
-  function DataCtrl($scope, $state, $http, $cookieStore, Service, AuthService) {
+  function DataCtrl($scope, $state, $http, $cookieStore, Service, AuthService, $rootScope, $window) {
     $http.defaults.headers.common['Cache-Control'] = 'no-cache';
     $http.defaults.headers.common.Token = $cookieStore.get('token');
 
@@ -111,7 +111,7 @@
       $http.defaults.headers.common.Token = $cookieStore.get('token');
       Service.query({table: 'initialize'}).$promise
         .then(function success(data) {
-          $scope.dataTables = data;
+          $scope.dataTables = angular.copy(data);
           $state.go('data.login');
         })
         .catch(function error() {
@@ -121,27 +121,127 @@
 
     initialize();
 
-    $scope.setTable = function (table) {
-      $scope.model = table.model;
-      $scope.first = table.first;
-      $scope.second = table.second;
-      $scope.third = table.third;
-    };
-
+    // ** HELPER FUNCTIONS FOR ALL CONTROLLERS
+    $rootScope.goBack = function(){
+      $window.history.back();
+    }
+    // Used for keeping order of keys in ng-repeat
     $scope.notSorted = function (obj) {
       if (!obj) {
         return [];
       }
       return Object.keys(obj);
     };
+
+    // Used for Recursive template
+    $scope.type = function (thing) {
+			switch(typeof thing){
+				case "object":
+					if(Object.prototype.toString.call(thing) === "[object Array]"){
+						return 'array'
+					} else if (thing == null) {
+						return 'null'
+					} else {
+						return 'hash'
+					}
+				case "string":
+          return "string"
+        case "number":
+          return "string"
+        case "boolean":
+          return "string"
+				default:
+					return typeof thing
+			}
+		}
+
+    // Copy all values of existing object into new object
+    $scope.deepExtend = function (src, dst) {
+      _.each(dst, function(val, prop) {
+        if(_.isArray(val)) {
+          _.each(val, function(val2, prop2) {
+            if(!src[prop][prop2]) {
+              src[prop].push(val2);
+            }
+            src[prop][prop2] = $scope.deepExtend(src[prop][prop2], val2);
+          })
+        } else if(_.isObject(val)) {
+          src[prop] = $scope.deepExtend(src[prop],val)
+        } else {
+          if(prop.toUpperCase() !== 'LAST_EDIT_BY' && prop.toUpperCase() !== 'TIME_STAMP') {
+            src[prop] = dst[prop];
+          }
+        }
+      })
+      return src;
+    }
+
+    // Sort object : Properties -> Objects -> Arrays
+    $scope.sortObject = function (object) {
+      var sortedObj = {},
+          keys = _.keys(object);
+
+      // sorting object based on value.length -> arrays are pushed to end of object
+      keys = _.sortBy(keys, function(key){
+        if(_.isArray(object[key]))
+          return 2;
+        else if (_.isObject(object[key]))
+          return 1;
+        else
+          return 0;
+      });
+
+      _.each(keys, function(key) {
+          // if array, push each recursed sorted object into array
+          if(_.isArray(object[key])) {
+            sortedObj[key] = [];
+            for(var x in object[key]) {
+              sortedObj[key].push($scope.sortObject(object[key][x]))
+            }
+          }
+          // else if object, recurse sorted object
+          else if(_.isObject(object[key])){
+              sortedObj[key] = $scope.sortObject(object[key]);
+          // else save object
+          } else {
+              sortedObj[key] = object[key];
+          }
+      });
+
+      return sortedObj;
+    }
   }
 
   // List of models
   function ListCtrl($scope, $state, $stateParams, PopupService, $window, $filter, NgTableParams, Service) {
       $scope.loading = true;
+      $scope.properties = [];
+      $scope.model = $stateParams.model;
+
       $scope.getColumn = function (table, name) {
         return table[name];
       };
+
+      $scope.loadProperties = function () {
+        Service.get({table: $scope.model, id: 'new'}).$promise
+          .then(function success(data) {
+            data = data.toJSON();
+            for(var key in data) {
+              if (!_.isObject(data[key])) {
+                $scope.properties.push(key);
+              }
+            }
+            $scope.first = $scope.properties[0];
+            $scope.second = $scope.properties[1];
+            $scope.third = $scope.properties[2];
+            $scope.load();
+          })
+          .catch(function error() {
+            $scope.loading = false;
+            $state.go('data.login');
+          })
+      }
+      $scope.loadProperties();
 
       // Sort models alphabetically, search based $scope.first
       $scope.load = function () {
@@ -152,7 +252,7 @@
             filterOb[$scope.first] = undefined;
             filterOb[$scope.second] = undefined;
             filterOb[$scope.third] = undefined;
-            sortOb[$scope.first] = 'asc';
+
 
             $scope.tableParams = new NgTableParams({
               page: 1,
@@ -165,12 +265,9 @@
                 var filteredData = params.filter() ?
                 $filter('filter')(data, params.filter()) :
                 data;
-                var orderedData = params.sorting() ?
-                $filter('orderBy')(filteredData, params.orderBy()) :
-                data;
 
-                params.total(orderedData.length); // set total for recalc pagination
-                $defer.resolve(orderedData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
+                params.total(filteredData.length); // set total for recalc pagination
+                $defer.resolve(filteredData.slice((params.page() - 1) * params.count(), params.page() * params.count()));
                 $scope.loading = false;
               }
             });
@@ -197,73 +294,50 @@
             });
         }
       };
-
-      $scope.load();
     }
 
   // View a single model's data
-  function ViewCtrl($scope, $state, $stateParams, Service) {
-    $scope.modelOnly = {}; //data from model only, no sets
-    $scope.modelArray = {}; //arrays joined to model
-    $scope.loading = true;
+  function ViewCtrl($scope, $state, $stateParams, Service, $q) {
+    $scope.model = $stateParams.model;
 
-    function load() {
-      Service.get({table: $scope.model, id: $stateParams.id }).$promise
+    (function load() {
+      Service.get({table: $scope.model, id: $stateParams.id}).$promise
         .then(function success(data) {
-          data = data.toJSON();
-          // Assign modelOnly data to modelOnly & array data to modelArray
-          for (var key in data) {
-            if (data[key] instanceof Array) {
-              for (var index in data[key]) {
-                $scope.modelArray[key + index] = data[key][index];
-              }
-            }
-            else if (data[key] instanceof Object) {
-              $scope.modelOnly[key] = data[key].NAME;
-            }
-            else {
-              $scope.modelOnly[key] = data[key];
-            }
-          }
-          $scope.loading = false;
+          $scope.value = $scope.sortObject(data.toJSON());
         })
-        .catch(function error() {
+        . catch(function error() {
           $scope.loading = false;
           $state.go('data.login');
-        });
+        })
+    })();
+
+    $scope.parents = {};
+    $scope.getParent = function (key, id) {
+      if(id === 0) {
+        return -1;
+      }
+      if($scope.parents[key+id]) {
+        return key+id;
+      }
+      key = key.toUpperCase().replace('_ID','');
+      Service.get({table:key, id:id }).$promise
+        .then(function success(data) {
+          $scope.parents[key+id] = data.toJSON();
+        })
+        .catch(function error() {
+          $state.go('data.login');
+        })
+      return key+id;
     }
-
-    $scope.removeNumbers = function (word) {
-      return word.replace(/[0-9]/g, '').toUpperCase();
-    };
-
-    load();
   }
 
   // Edit a model
   function EditCtrl($scope, $state, $stateParams, Service) {
+    $scope.model = $stateParams.model;
     $scope.loading = false;
-    $scope.options = {};
-    $scope.entity = {};
-    $scope.modelOnly = {};
-    $scope.modelParent = {};
-    $scope.modelArray = {};
 
+    // Save new Object
     $scope.save = function () { //create a new model. Issues a PUT to /api/*
-      // Make sure required fields are entered
-      if ($scope.entity[$scope.first] === undefined ||
-          $scope.entity[$scope.second] === undefined ||
-          $scope.entity[$scope.third] === undefined) {
-        $scope.error = 'Must enter all the red fields above';
-        return;
-      }
-
-      if ($scope.entity[$scope.first].length < 1 ||
-          $scope.entity[$scope.second].length < 1 ||
-          $scope.entity[$scope.third].length < 1) {
-        $scope.error = 'Must enter all the red fields above';
-        return;
-      }
       // If valid, save model to database
       $scope.loading = true;
       Service.save({table: $scope.model}, $scope.entity).$promise
@@ -277,92 +351,107 @@
         });
     };
 
-    function loadParent(table) {
-      Service.query({table: table}).$promise
-      .then(function success(data) {
-        $scope.options[table] = data;
+    // When adding item to Array, clear values from it
+    $scope.clearValues = function (table) {
+      var temp = angular.copy(table);
+      _.each(table, function(val, prop) {
+        if(_.isArray(val)) {
+          _.each(val, function(val2, prop2) {
+            temp[prop][prop2] = $scope.clearValues(val2);
+          })
+        } else if(_.isObject(val)) {
+          temp[prop] = $scope.clearValues(val);
+        } else {
+          temp[prop] = "";
+        }
       })
-      .catch(function error() {
-        $state.go('data.login');
-      });
+      return temp;
     }
 
-    function loadModel() {
+
+
+    // Determines if valid FK field, ex. school_id
+    // Also determines if FK is nested in parent table, if so don't search
+    $scope.checkForParent = function (key) {
+      if(key.toUpperCase().indexOf('_ID') === -1) {
+        return false;
+      }
+
+      key = key.toUpperCase().replace('_ID','');
+      if(key === $scope.model.toUpperCase()) {
+        return false;
+      }
+
+      return !checkParent($scope.value, key);
+    }
+
+    // Recursive function to check if FK links to Parent Table in Object
+    function checkParent(data, key) {
+      var hasParent = false;
+      for(var prop in data) {
+        if(prop.length > 1 && prop.toUpperCase() === key) {
+          hasParent = true;
+          break;
+        }
+        else if(_.isArray(data[prop])) {
+          if(checkParent(data[prop],key)) {
+            hasParent = true;
+            break;
+          }
+        }
+      }
+      return hasParent;
+    }
+
+    // Get parent list for parent search option
+    $scope.options = {};
+    $scope.getParent = function (table) {
+      if(!$scope.options[table]) {
+        $scope.options[table] = [];
+        Service.query({table: table}).$promise
+        .then(function success(data) {
+          $scope.options[table] = data;
+        })
+        .catch(function error() {
+          $state.go('data.login');
+        });
+      } else {
+        return $scope.options[table];
+      }
+    }
+
+    // Load Existing Object
+    function loadModel(val) {
       Service.get({table: $scope.model, id: $stateParams.id}).$promise
         .then(function success(data) {
-          data = data.toJSON();
-          for (var key in data) {
-            if (data[key] instanceof Array) {
-              $scope.modelArray[key] = [];
-              $scope.entity[key] = [];
-              for (var key2 in data[key]) {
-                var info = {};
-                for (var key3 in data[key][key2]) {
-                  info[key3] = data[key][key2][key3];
-                }
-                $scope.modelArray[key].push(joins[key][0]);
-                $scope.entity[key].push(info);
-              }
-            }
-            else if (key.indexOf('_ID') !== -1) {
-              $scope.entity[key.replace('_ID', '')] = {id: ''};
-              $scope.entity[key.replace('_ID', '')].id = data[key];
-            }
-            else {
-              $scope.entity[key] = data[key];
-            }
-          }
+            $scope.value = $scope.sortObject(deepExtend(val,data.toJSON()));
         })
         .catch(function error() {
           $state.go('data.login');
         });
     }
 
-    var joins = {};
+    // Load new Object
     function loadNewModel() {
       Service.get({table: $scope.model, id: 'new'}).$promise
         .then(function success(data) {
-          data = data.toJSON();
-          for (var key in data) {
-            if (data[key] instanceof Array) {
-              joins[key] = [];
-              $scope.entity[key] = [];
-              $scope.modelArray[key] = [];
-              joins[key].push(data[key][0]);
-            }
-            else if (data[key] instanceof Object) {
-              loadParent(key);
-              $scope.modelParent[key] = data[key];
-            }
-            else {
-              $scope.modelOnly[key] = data[key];
-            }
-          }
           if ($stateParams.id) {
-            loadModel();
+            loadModel(data.toJSON());
+          } else {
+            $scope.value = $scope.sortObject(data.toJSON());
           }
         })
         .catch(function error() {
           $state.go('data.login');
         });
     }
-
-    $scope.add = function (table) {
-      $scope.entity[table].push({});
-      $scope.modelArray[table].push(joins[table][0]);
-    };
-
-    $scope.remove = function (table, index) {
-      $scope.entity[table].splice(index, index + 1);
-      $scope.modelArray[table].splice(index, index + 1);
-    };
 
     loadNewModel();
   }
 
   angular.module('schoolApp.controllers', ['ngTable', 'ngCookies', 'ngSanitize', 'ui.select'])
-      .controller('DataCtrl', ['$scope', '$state', '$http', '$cookieStore', 'Service', 'AuthService', DataCtrl])
+      .controller('DataCtrl', ['$scope', '$state', '$http', '$cookieStore', 'Service', 'AuthService', '$rootScope', '$window', DataCtrl])
       .controller('ListCtrl', ['$scope', '$state', '$stateParams', 'PopupService', '$window', '$filter', 'ngTableParams', 'Service', ListCtrl])
-      .controller('ViewCtrl', ['$scope', '$state', '$stateParams', 'Service', ViewCtrl])
+      .controller('ViewCtrl', ['$scope', '$state', '$stateParams', 'Service', '$q', ViewCtrl])
       .controller('EditCtrl', ['$scope', '$state', '$stateParams', 'Service', EditCtrl]);
 })();

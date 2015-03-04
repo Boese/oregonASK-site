@@ -7,7 +7,7 @@
   <div class="panel-body">
     <div class="row">
       <div style="word-wrap:break-word" ng-show="removeUnneededData(key,value)" class="col-md-4" ng-repeat="(key,value) in contact">
-        <b class="text-info">{{key}}</b> : <i>{{value}}</i>
+        <b>{{key}}</b> : <i>{{value}}</i>
       </div>
     </div>
   </br>
@@ -16,7 +16,7 @@
         <accordion-group heading='{{key}}' ng-repeat="(key,value) in contactArray">
           <ul style="word-wrap:break-word" class="list-group col-md-4" ng-repeat="(key2,value2) in value">
             <li ng-show="removeUnneededData(key3,value3)" class="list-group-item" ng-repeat="(key3,value3) in value2">
-              <b class="text-success">{{key3}}</b> : <i>{{value3}}</i>
+              <b>{{key3}}</b> : <i>{{value3}}</i>
             </li>
           </ul>
         </accordion-group>
