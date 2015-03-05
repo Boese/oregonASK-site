@@ -20,7 +20,10 @@
     "underscore": "~1.7.0",
     "angular-underscore": "~0.5.0",
     "papaparse": "~4.1.0",
-    "bootstrap-less": "~3.2.0"
+    "bootstrap-less": "~3.2.0",
+    "ngAnimate": "*",
+    "ng-tags-input": "2.2.0",
+    "angular-csv-import": "~0.0.15"
   },
   "devDependencies": {}
 }

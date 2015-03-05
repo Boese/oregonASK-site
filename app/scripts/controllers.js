@@ -424,7 +424,7 @@
     function loadModel(val) {
       Service.get({table: $scope.model, id: $stateParams.id}).$promise
         .then(function success(data) {
-            $scope.value = $scope.sortObject(deepExtend(val,data.toJSON()));
+            $scope.value = $scope.sortObject($scope.deepExtend(val,data.toJSON()));
         })
         .catch(function error() {
           $state.go('data.login');
