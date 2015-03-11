@@ -1,6 +1,6 @@
 <!--Load Dynamic Form Recursively-->
 <div>
-	<div ng-if="value" ng-include="'value.html'"></div>
+	<div ng-if="value" ng-init="parentKey = model" ng-include="'value.html'"></div>
 </div>
 
 <button type="submit" class="btn btn-success"><span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Submit</button>
@@ -22,14 +22,14 @@
 		</span>
     <ul style="list-style-type:none" ng-switch-when="array">
       <h3 class="text-center"><b>{{key}}</b></h3>
-      <div ng-repeat="key in notSorted($parent.value) track by $index" ng-init="groupValue = $parent.value; value = $parent.value[key]; parent = parentKey">
+      <div ng-repeat="key in notSorted($parent.value) track by $index" ng-init="groupValue = $parent.value; value = $parent.value[key]; parentKey = $parent.key">
         <h4 style="color:blue">{{$parent.key}} {{key}}</h4>
         <span ng-include="'value.html'"></span>
-        <button ng-show="(key-0 === $parent.value.length-1) && ($parent.value.length > 1)" ng-click="$event.preventDefault(); $parent.value.pop();" class="btn btn-danger">Remove {{$parent.key}} {{key}} ↑</button>
         <button ng-show="key-0 === $parent.value.length-1" ng-click="$event.preventDefault(); $parent.value.push(clearValues(value));" class="btn btn-info">Add {{$parent.key}}</button>
       </div>
     </ul>
 		<ul style="list-style-type:none" ng-switch-when="hash">
+			<div class="btn btn-sm btn-danger" ng-click="$event.preventDefault(); delete(parentKey, $parent.value.ID, $index)">Delete</div>
 			<div ng-repeat="key in notSorted($parent.value) track by $index" ng-init="groupValue = $parent.value; value = $parent.value[key];">
         <span ng-include="'value.html'"></span>
 			</div>
@@ -44,7 +44,7 @@
     <p style="color:green">Search for {{searchKey}}
       <ui-select ng-model="groupValue[key]" theme="selectize" ng-disabled="disabled">
         <ui-select-match placeholder="Select or search a {{searchKey}} in the list...">{{$select.selected.NAME}} <small>{{$select.selected.COUNTY}}</small><small>{{$select.selected.SPONSOR_TYPE}}</small></ui-select-match>
-        <ui-select-choices repeat="option.id as option in options[searchKey] | filter: $select.search">
+        <ui-select-choices repeat="option.ID as option in options[searchKey] | filter: $select.search">
           <span ng-bind-html="option.NAME | highlight: $select.search"></span>
           <small>
             <span ng-bind-html="option.COUNTY | highlight: $select.search"></span>
@@ -52,6 +52,6 @@
           </small>
         </ui-select-choices>
       </ui-select>
-      <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); $parent.value[key] = null">Clear</button>
+      <button class="btn btn-default btn-sm" ng-click="$event.preventDefault(); groupValue[key] = ''">Clear</button>
   </div>
 </script>

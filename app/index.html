@@ -43,6 +43,7 @@
             <li ng-repeat="dataTable in dataTables">
               <a ng-click="collapse()" ui-sref="data.list({model:dataTable})" >{{dataTable}}</a>
             </li>
+            <li><div class="btn btn-sm btn-success center-block" ui-sref="data.edit-table">add</div></li>
           </ul>
         </div>
 

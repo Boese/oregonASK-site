@@ -32,6 +32,10 @@
       url: ':model/grid',
       templateUrl: 'views/grid.html',
       controller: 'GridCtrl'
+    }).state('data.edit-table', {
+      url: ':table/edit-table',
+      templateUrl: 'views/edit-table.html',
+      controller: 'EditTableCtrl'
     }).state('data.login', {
       url: 'login',
       templateUrl: 'views/login.html'

@@ -3,6 +3,7 @@
   <h3 style="color:blue">All <span ng-show="loading" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> {{model}}s</h3>
   <button class="btn btn-info" ui-sref="data.grid({model:model})">Import/Export {{model}} data</button>
   <button class="btn btn-success" ui-sref="data.new({model:model})">Add New {{mode}}</button>
+  <button class="btn btn-warning pull-right" ui-sref="data.edit-table({table:model})">Edit table</button>
 </div>
 <hr>
 
@@ -43,8 +44,8 @@
       <td>{{getColumn(mod,first)}}</td>
       <td>{{getColumn(mod,second)}}</td>
       <td>{{getColumn(mod,third)}}</td>
-      <td><a class="btn btn-primary" ui-sref="data.view({model:model,id:mod.id})">View</a></td>
-      <td><a class="btn btn-danger"  ng-click="delete(mod,mod.id)">Delete</a></td>
+      <td><a class="btn btn-primary" ui-sref="data.view({model:model,id:mod.ID})">View</a></td>
+      <td><a class="btn btn-danger"  ng-click="delete(mod.ID)">Delete</a></td>
     </tr>
   </table>
 </div>

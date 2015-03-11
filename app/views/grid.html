@@ -4,30 +4,45 @@
   <div class="btn btn-info pull-right" ng-click="search()">Export</div>
   <div class="btn btn-success pull-right" ng-click="openModalUpload()">Import</div>
   <small class="text-center">Input what you want to export below</small>
+  <small class="text-center" style="color:red" ng-show="errorMessage">{{errorMessage}}</small>
 </h2>
 
-<div class="well text-center">
-  <p class="lead">
-    <ol>
-      <li>The checkboxes on the left will select the fields you want to view in the export.</li>
-      <br>
-      <li>The checkboxes beside the table name in the middle <i>(except top table)</i> will select nested tables for export.</li>
-      <br>
-      <li>To add a search item, where it says <i>Add a tag</i>, input a value and then press <kbd>enter</kbd>.</li>
-      <br>
-      <li>Select <b>Export</b> in top right corner to download excel spreadsheet of results.</li>
-    </ol>
-  </p>
+<div class="well text-center row">
+    <div class="col-md-6">
+      <p class="lead"> <h3 class="text-center">Import</h3>
+      <ol>
+        <li>Make sure all of the fields you include are prepended with table name ex. School.Name, School.Street, School_Info.Year</li>
+        <br>
+        <li>Make sure all of the fields are spelled exactly the same way as in the database ex. AgrNumber -> Agr_Number</li>
+        <br>
+        <li>Any parent tables will be looked up by field. ex. if you are inserting into Nutrition, school fields could be School.Name, School.County</li>
+        <br>
+        <li>If an error is made, correct it on the spreadsheet and try again. **IMPORTANT** MAKE SURE YOU UPLOAD .csv FILE only, not .xlsx</li>
+      </ol>
+    </p>
+    </div>
+    <div class="col-md-6">
+      <p class="lead"> <h3 class="text-center">Export</h3>
+      <ol>
+        <li>The checkboxes on the left will select the fields you want to view in the export.</li>
+        <br>
+        <li>The checkboxes beside the table name in the middle <i>(except top table)</i> will select nested tables for export.</li>
+        <br>
+        <li>To add a search item, where it says <i>Add a tag</i>, input a value and then press <kbd>enter</kbd>.</li>
+        <br>
+        <li>Select <b>Export</b> in top right corner to download excel spreadsheet of results.</li>
+      </ol>
+    </p>
+    </div>
 </div>
 
-
 <h3 class="text-center"><b>{{model.toUpperCase()}}</b></h3>
-<div ng-init="parentKey = model" ng-if="value" ng-include="'recursiveSearch.html'"></div>
+<div ng-if="value" ng-init="parentKey = model" ng-include="'recursiveSearch.html'"></div>
 
 <script type="text/ng-template" id="recursiveSearch.html">
   <span ng-switch="type(value)">
 		<div ng-switch-when="string">
-      <div class="input-group" ng-if="key.toUpperCase().indexOf('_ID') === -1">
+      <div class="input-group">
         <span class="input-group-addon"><input ng-model="colChecked" type="checkbox" ng-change="updateColumns(parentKey,key)">{{key}}</span>
         <tags-input ng-model="tags" on-tag-added="updateTags(tags,parentKey,key)" on-tag-removed="updateTags(tags,parentKey,key)"></tags-input>
       </div>

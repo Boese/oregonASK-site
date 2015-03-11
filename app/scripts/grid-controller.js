@@ -55,8 +55,9 @@
     }
 
     $scope.updateColumns = function (table,col) {
-      var idx = _.indexOf(_.pluck($scope.searchModel.tables,'name'),table)
-      var colIdx = _.indexOf($scope.searchModel.tables[idx].columns, col)
+      $scope.errorMessage = undefined;
+      var idx = _.indexOf(_.pluck($scope.searchModel.tables,'name'),table);
+      var colIdx = _.indexOf($scope.searchModel.tables[idx].columns, col);
       if(colIdx === -1)
         $scope.searchModel.tables[idx].columns.push(col);
       else
@@ -90,13 +91,28 @@
 
 
     $scope.search = function () {
-      Service.search({table:'search_database'},$scope.searchModel).$promise
-        .then(function success(data) {
-          getCsvExport(data);
-        })
-        .catch(function error() {
-          $state.go('data.login');
-        })
+      var error = false;
+      var tables = "";
+      _.each($scope.searchModel.tables, function (table) {
+        if(table.columns < 1) {
+          tables += table.name + ",";
+          error = true;
+        }
+      })
+
+      if(error) {
+        $scope.errorMessage = "must select at least one field in " + tables;
+      }
+
+      if(!error) {
+        Service.search({table:'search_database'},$scope.searchModel).$promise
+          .then(function success(data) {
+            getCsvExport(data);
+          })
+          .catch(function error() {
+            $state.go('data.login');
+          })
+      }
     }
 
     function getCsvExport (results) {
@@ -132,7 +148,13 @@
 
     function importFile (file) {
       var result = Papa.parse(file, {header:true});
-      console.log(result);
+      Service.save({table: 'upload_data', id: $scope.model}, result.data).$promise
+        .then(function success(data) {
+          alert('done');
+        })
+        .catch(function error(data) {
+          $state.go('data.login');
+        })
     }
   }
 

@@ -44,7 +44,7 @@
         .then(function success(data) {
           if (data.Token) {
             $cookieStore.put('token', data.Token);
-            initialize();
+            $scope.initialize();
             $scope.loading = false;
           }
           // Server responded with error message
@@ -107,7 +107,7 @@
     };
 
     $scope.dataTables = [];
-    function initialize() {
+    $scope.initialize = function() {
       $http.defaults.headers.common.Token = $cookieStore.get('token');
       Service.query({table: 'initialize'}).$promise
         .then(function success(data) {
@@ -119,7 +119,7 @@
         });
     }
 
-    initialize();
+    $scope.initialize();
 
     // ** HELPER FUNCTIONS FOR ALL CONTROLLERS
     $rootScope.goBack = function(){
@@ -222,7 +222,7 @@
         return table[name];
       };
 
-      $scope.loadProperties = function () {
+      (function loadProperties() {
         Service.get({table: $scope.model, id: 'new'}).$promise
           .then(function success(data) {
             data = data.toJSON();
@@ -234,17 +234,16 @@
             $scope.first = $scope.properties[0];
             $scope.second = $scope.properties[1];
             $scope.third = $scope.properties[2];
-            $scope.load();
+            load();
           })
           .catch(function error() {
             $scope.loading = false;
             $state.go('data.login');
           })
-      }
-      $scope.loadProperties();
+      })();
 
       // Sort models alphabetically, search based $scope.first
-      $scope.load = function () {
+      function load() {
         Service.query({table: $scope.model}).$promise
           .then(function success(data) {
             var filterOb = {};
@@ -278,15 +277,17 @@
           });
       };
 
-
-
-      $scope.delete = function (mod, id) {
+      $scope.delete = function (id) {
         if (PopupService.showPopup('Really delete this?')) {
           $scope.loading = true;
-          mod.$delete({table: $scope.model, id: id}).$promise
+          Service.delete({table: $scope.model, id: id}).$promise
             .then(function success() {
               $scope.loading = false;
-              $state.go('data.list', {model: $scope.model});
+              $state.transitionTo($state.current, {model:$scope.model}, {
+                  reload: true,
+                  inherit: false,
+                  notify: true
+              });
             })
             .catch(function error() {
               $scope.loading = false;
@@ -332,24 +333,64 @@
   }
 
   // Edit a model
-  function EditCtrl($scope, $state, $stateParams, Service) {
-    $scope.model = $stateParams.model;
-    $scope.loading = false;
+  function EditCtrl($scope, $state, $stateParams, Service, PopupService) {
+  $scope.model = $stateParams.model;
+  $scope.loading = false;
 
     // Save new Object
     $scope.save = function () { //create a new model. Issues a PUT to /api/*
       // If valid, save model to database
       $scope.loading = true;
-      Service.save({table: $scope.model}, $scope.entity).$promise
-        .then(function success() {
+      Service.save({table: $scope.model}, $scope.value).$promise
+        .then(function success(data) {
           $scope.loading = false;
-          $state.go('data.view', {model: $scope.model, id: $stateParams.id});
+          $state.go('data.list', {model: $scope.model});
         })
         .catch(function error() {
           $scope.loading = false;
           $state.go('data.login');
         });
     };
+
+    $scope.delete = function (table, id, index) {
+      if(!id) {
+        if(table !== $scope.model) {
+          removeTable(index, table, $scope.value);
+        }
+      } else {
+        if (PopupService.showPopup('Really delete this?')) {
+          $scope.loading = true;
+          Service.delete({table: table, id: id}).$promise
+            .then(function success(data) {
+              removeTable(index, table, $scope.value);
+              $state.go('data.list', {model: $scope.model});
+              $scope.loading = false;
+            })
+            .catch(function error() {
+              $scope.loading = false;
+              $state.go('data.login');
+            });
+        }
+      }
+    };
+
+    function removeTable(index, tableName, table) {
+      _.each(table, function (val, key) {
+        if(key === tableName) {
+          table[key].splice(index,1);
+          if(table[key].length < 1)
+            table[key] = undefined;
+          return;
+        }
+        if(_.isArray(val)) {
+          _.each(val, function (val2, key2) {
+            removeTable(index, key2, val2)
+          })
+        } else if(_.isObject(val)) {
+          removeTable(index, key, val)
+        }
+      })
+    }
 
     // When adding item to Array, clear values from it
     $scope.clearValues = function (table) {
@@ -449,9 +490,144 @@
     loadNewModel();
   }
 
+  function EditTableCtrl ($scope, $state, $stateParams, Service, PopupService) {
+    $scope.parentTables = angular.copy($scope.dataTables);
+    $scope.tableName = $stateParams.table;
+    $scope.parents = [];
+    $scope.props = [];
+    $scope.add = true;
+
+    $scope.table = {
+      name: $scope.tableName,
+      rename:[],
+      add:[],
+      drop:[],
+      addParents:[],
+      dropParents:[]
+    };
+
+    $scope.deleteTable = function () {
+      if (PopupService.showPopup('Really delete this?')) {
+        Service.delete({table: 'delete_table', id: $scope.tableName}).$promise
+          .then(function success(data) {
+            alert('success');
+            $scope.initialize();
+          })
+          .catch(function error() {
+            $state.go('data.login');
+          });
+      }
+    }
+
+    $scope.submitTable = function () {
+      if($scope.table.name.length < 1) {
+        alert('Enter table name');
+        return;
+      }
+      if($scope.table.add.indexOf('') !== -1) {
+        alert('Enter empty add property fields');
+        return;
+      }
+      if($scope.table.addParents.indexOf('') !== -1) {
+        alert('please select parents to add');
+        return;
+      }
+
+      if($scope.add) {
+        if (PopupService.showPopup('Really create this table?')) {
+          Service.save({table: 'create_table'}, $scope.table).$promise
+            .then(function success(data) {
+              alert('success');
+              $scope.initialize();
+            })
+            .catch(function error() {
+              $state.go('data.login');
+            });
+        }
+      } else {
+        if (PopupService.showPopup('Really alter this table?')) {
+          Service.save({table: 'alter_table'}, $scope.table).$promise
+            .then(function success(data) {
+              alert('success');
+              $scope.initialize();
+            })
+            .catch(function error() {
+              $state.go('data.login');
+            });
+        }
+      }
+    }
+
+    $scope.getTable = function() {
+      var tableFormat = [];
+      tableFormat = _.union(tableFormat,$scope.parents,$scope.props,$scope.table.add,$scope.table.addParents);
+      tableFormat = _.difference(tableFormat,$scope.table.drop,$scope.table.dropParents);
+
+      _.each($scope.table.rename, function (val,key) {
+        var idx = tableFormat.indexOf(val.old);
+        tableFormat[idx] = val.new;
+      });
+      return tableFormat;
+    }
+
+    $scope.dropParent = function (prop) {
+      prop = prop.toUpperCase().replace('_ID','');
+      var idx = $scope.table.dropParents.indexOf(prop);
+      if(idx !== -1) {
+        $scope.table.dropParents.splice(idx,1);
+      } else {
+        $scope.table.dropParents.push(prop);
+      }
+    }
+
+    $scope.dropProp = function (prop) {
+      var idx = $scope.table.drop.indexOf(prop);
+      if(idx !== -1) {
+        $scope.table.drop.splice(idx,1);
+      } else {
+        $scope.table.drop.push(prop);
+      }
+    }
+
+    $scope.rename = function (oldName, newName) {
+      var idx = $scope.props.indexOf(oldName);
+      $scope.props[idx] = newName;
+      $scope.table.rename.push({
+        'old' : oldName,
+        'new' : newName
+      })
+    };
+
+    (function loadTableProperties() {
+      if($scope.tableName) {
+        var idx = $scope.parentTables.indexOf($scope.tableName);
+        $scope.parentTables.splice(idx,1);
+        Service.get({table: $scope.tableName, id: 'new'}).$promise
+          .then(function success(data) {
+            data = data.toJSON();
+            _.each(data, function(val,key) {
+              if(!_.isArray(val) && !_.isObject(val)) {
+                if(key.toUpperCase().indexOf('_ID') !== -1) {
+                  $scope.parents.push(key);
+                } else {
+                  $scope.props.push(key);
+                }
+              }
+            })
+            $scope.add = false;
+
+          })
+          .catch(function error() {
+            $state.go('data.login');
+          });
+      }
+    })();
+  }
+
   angular.module('schoolApp.controllers', ['ngTable', 'ngCookies', 'ngSanitize', 'ui.select'])
       .controller('DataCtrl', ['$scope', '$state', '$http', '$cookieStore', 'Service', 'AuthService', '$rootScope', '$window', DataCtrl])
       .controller('ListCtrl', ['$scope', '$state', '$stateParams', 'PopupService', '$window', '$filter', 'ngTableParams', 'Service', ListCtrl])
       .controller('ViewCtrl', ['$scope', '$state', '$stateParams', 'Service', '$q', ViewCtrl])
-      .controller('EditCtrl', ['$scope', '$state', '$stateParams', 'Service', EditCtrl]);
+      .controller('EditCtrl', ['$scope', '$state', '$stateParams', 'Service', 'PopupService', EditCtrl])
+      .controller('EditTableCtrl', ['$scope', '$state', '$stateParams', 'Service', 'PopupService', EditTableCtrl]);
 })();

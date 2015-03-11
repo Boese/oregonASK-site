@@ -2,7 +2,7 @@
   <div class="panel-heading text-center">
     <h3>
       {{model}} info & related tables <div class="btn btn-danger btn-sm pull-left" type="button" class="close" aria-label="Close" ng-click="goBack()"><span aria-hidden="true">&times;</span></div>
-      <a class="btn btn-info pull-right" ui-sref="data.edit({model:model,id:value.id})">Edit</a>
+      <a class="btn btn-info pull-right" ui-sref="data.edit({model:model,id:value.ID})">Edit</a>
     </h3>
     <h4 style="color:orange">{{value.NAME}} {{value.SITE_NAME}}</h4>
   </div>
@@ -23,7 +23,7 @@
       <div ng-if="key.toUpperCase().indexOf('_ID') !== -1" ng-init="parentid = getParent(key,value); key = key.toUpperCase().replace('_ID','')">
         <div ng-if="parentid !== -1">
           <i>{{key}} :</i>
-          <a class="btn btn-primary btn-sm" ui-sref="data.view({model:key,id:parents[parentid].id})">View {{key}} : {{parents[parentid].NAME}} {{parents[parentid].SITE_NAME}}</a>
+          <a class="btn btn-primary btn-sm" ui-sref="data.view({model:key,id:parents[parentid].ID})">View {{key}} : {{parents[parentid].NAME}} {{parents[parentid].SITE_NAME}}</a>
         </div>
       </div>
 		</span>
@@ -31,7 +31,7 @@
     <hr>
       <h3 class="text-center"><b>{{key}}</b></h3>
       <div ng-repeat="key in notSorted($parent.value) track by $index" ng-init="groupValue = $parent.value; value = $parent.value[key];">
-        <h4 style="color:blue">{{$parent.key}} {{key}} <a class="btn btn-info btn-sm pull-right" ui-sref="data.view({model:$parent.key,id:value.id})">View this {{$parent.key}} {{key}}</a></h4>
+        <h4 style="color:blue">{{$parent.key}} {{key}} <a class="btn btn-info btn-sm pull-right" ui-sref="data.view({model:$parent.key,id:value.ID})">View this {{$parent.key}} {{key}}</a></h4>
         <div ng-include="'recursiveView.html'"></div>
       </div>
     </div>
